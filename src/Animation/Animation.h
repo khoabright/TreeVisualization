@@ -22,7 +22,7 @@ public:
     CodeHighlight *codeHighlight;
 
     int curIndex = 0; /* current processing animation index */
-    int curChildIndex = 0;
+    int stepChildIndex = 0;
     bool reverse = 0;
     // std::string curInstruction = "";
     float dt;

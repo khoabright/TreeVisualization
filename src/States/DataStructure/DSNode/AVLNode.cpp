@@ -4,7 +4,7 @@ AVLNode::AVLNode()
 {
 }
 
-AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _val, sf::Font *_font, std::map<std::string, sf::Color> *Colors)
+AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _key, sf::Font *_font, std::map<std::string, sf::Color> *Colors)
 {
     this->Colors = Colors;
     /* parameters are already scaled */
@@ -20,11 +20,14 @@ AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _val, sf::F
     scaleSize();
 
     //Variables
-    newNext(nullptr);
-    nextNext();
+    
+    for (int i = 0; i < numChild; ++i) {
+        newNext(nullptr, i);
+        nextNext(i);
+    }
 
-    newVal(_val);
-    nextVal();
+    newKey(_key);
+    nextKey();
 
     this->font = _font;
     this->scale_x = scale_x;
@@ -52,8 +55,11 @@ AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _val, sf::F
 
     //Arrow
     arrow_img.loadFromFile("Resources/Images/rightArrow.png");
-    arrow.setTexture(&arrow_img);
-    arrow.setSize(sf::Vector2f(100.f, 40.f));
+
+    for (int i = 0; i < numChild; ++i) {
+        arrow[i].setTexture(&arrow_img);
+        arrow[i].setSize(sf::Vector2f(100.f, 40.f));
+    }
 
     //Text
     text.setFont(*font);
@@ -80,15 +86,15 @@ void AVLNode::reset()
     array_fillColor.clear();
     array_outlineColor.clear();
     array_label.clear();
-    array_next.clear();
-    array_val.clear();
+    for (int i = 0; i < numChild; ++i) array_next[i].clear(); 
+    array_key.clear();
     array_pos.clear();
 
     idx_fillColor = -1;
     idx_outlineColor = -1;
     idx_label = -1;
-    idx_next = -1;
-    idx_val = -1;
+    for (int i = 0; i < numChild; ++i) idx_next[i] = -1;
+    idx_key = -1;
     idx_pos = -1;
 
     this->setNormalColor();
@@ -99,11 +105,13 @@ void AVLNode::reset()
     newLabel(this->labelString);
     nextLabel();
 
-    newNext(this->next);
-    nextNext();
+    for (int i = 0; i < numChild; ++i) {
+        newNext(this->next[i], i);
+        nextNext(i);
+    }
 
-    newVal(this->val);
-    nextVal();
+    newKey(this->key);
+    nextKey();
 
     newPos(sf::Vector2f(this->x, this->y));
     nextPos();
@@ -112,53 +120,53 @@ void AVLNode::reset()
 /* Update along time */
 
 //Next
-void AVLNode::updateNext()
+void AVLNode::updateNext(int next_index)
 {
-    this->next = array_next[idx_next];
+    this->next[next_index] = array_next[next_index][idx_next[next_index]];  /* next_index is index of current childNode, idx_next is idx of array_next */
 }
 
-void AVLNode::newNext(AVLNode *new_next)
+void AVLNode::newNext(AVLNode *new_next, int next_index)
 {
-    if (this->idx_next == (int)this->array_next.size() - 1) {
-        this->array_next.push_back(new_next);
+    if (this->idx_next[next_index] == (int)this->array_next[next_index].size() - 1) {
+        this->array_next[next_index].push_back(new_next);
     }
 }
 
-void AVLNode::prevNext()
+void AVLNode::prevNext(int next_index)
 {
-    this->idx_next--;
-    this->updateNext();
+    this->idx_next[next_index]--;
+    this->updateNext(next_index);
 }
 
-void AVLNode::nextNext()
+void AVLNode::nextNext(int next_index)
 {
-    this->idx_next++;
-    this->updateNext();
+    this->idx_next[next_index]++;
+    this->updateNext(next_index);
 }
 
-//Val
-void AVLNode::updateVal()
+//key
+void AVLNode::updateKey()
 {
-    this->val = array_val[idx_val];
+    this->key = array_key[idx_key];
 }
 
-void AVLNode::newVal(int new_val)
+void AVLNode::newKey(int new_key)
 {
-    if (this->idx_val == (int)this->array_val.size() - 1) {
-        this->array_val.push_back(new_val);
+    if (this->idx_key == (int)this->array_key.size() - 1) {
+        this->array_key.push_back(new_key);
     }
 }
 
-void AVLNode::prevVal()
+void AVLNode::prevKey()
 {   
-    this->idx_val--;
-    this->updateVal();
+    this->idx_key--;
+    this->updateKey();
 }
 
-void AVLNode::nextVal()
+void AVLNode::nextKey()
 {
-    this->idx_val++;
-    this->updateVal();
+    this->idx_key++;
+    this->updateKey();
 }
 
 
@@ -204,7 +212,7 @@ void AVLNode::nextColor()
 //Text & Label
 void AVLNode::updateText()
 {
-    this->text.setString(std::to_string(val));
+    this->text.setString(std::to_string(key));
     float cur_x = shape.getPosition().x;
     float cur_y = shape.getPosition().y;
     float cur_w = shape.getGlobalBounds().width;
@@ -291,9 +299,11 @@ void AVLNode::render(sf::RenderTarget *target)
         target->draw(this->shape);
         target->draw(this->text);
     }
-    if (this->showArrow)
-        target->draw(this->arrow);
 
-    if (this->showLabel) 
+    for (int i = 0; i <= 1; ++i)
+        if (this->showArrow[i])
+            target->draw(this->arrow[i]);
+
+    if (this->showLabel)
         target->draw(this->labelText);
 }

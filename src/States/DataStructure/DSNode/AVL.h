@@ -17,13 +17,13 @@ private:
     float nodeDistanceX = 100.f;
     float nodeDistanceY = 100.f;
 
-    AVLNode *head, *tail;
+    AVLNode *root;
     AnimationAVL *animationAVL;
     std::vector<AVLNode *> Nodes;
-    
+
     // Child Buttons
     float childButtonOriginX = 125.f;
-    float childButtonOriginY = 545.f; // last is 375 
+    float childButtonOriginY = 545.f; // last is 375
     float childButtonWidth = 80.f;
     float childButtonHeight = 25.f;
     float childButtonCharacterSize = 16.f;
@@ -51,32 +51,33 @@ private:
     void button_initialize();
     void button_add();
     void button_delete();
-    void button_update();
     void button_search();
     void button_quit();
 
+    
+    // AVL operations
+    int heightAVL(AVLNode *N);
+    AVLNode *newAVLNode(int key);
+    AVLNode *rightRotate(AVLNode *y);
+    AVLNode *leftRotate(AVLNode *x);
+    int getBalanceFactor(AVLNode *N);
+    AVLNode *insertAVLNode(AVLNode *AVLNode, int key);
+    AVLNode *AVLNodeWithMimumValue(AVLNode *AVLNode);
+    AVLNode *deleteAVLNode(AVLNode *root, int key);
+
     // Add
-    void addHead(int nodeValue);
-    void addTail(int nodeValue);
     void addMiddle(int index, int nodeValue);
 
     // Delete
-    void deleteHead();
-    void deleteTail();
     void deleteMiddle(int index);
 
-    //Update
-    void updateNode(int index, int newValue);
-    void searchNode(int searchValue);
-
     void prepareNewInstruction();
-    
-    
+
 public:
     AVL(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State *> *states);
     ~AVL();
 
-    //Reset
+    // Reset
     void DeleteNodePointers();
 
     // Functions

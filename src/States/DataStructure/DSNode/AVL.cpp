@@ -3,8 +3,7 @@
 AVL::AVL(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State *> *states)
     : DataStructure(window, supportedKeys, states)
 {
-    this->head = nullptr;
-    this->tail = nullptr;
+    this->root = nullptr;
     this->exist.resize(105);
 
     auto AVLScale = [&]()
@@ -68,7 +67,6 @@ void AVL::initTriggerFunction()
         this->triggerFunction["Initialize"] = std::bind(&AVL::button_initialize, this);
         this->triggerFunction["Add"] = std::bind(&AVL::button_add, this);
         this->triggerFunction["Delete"] = std::bind(&AVL::button_delete, this);
-        this->triggerFunction["Update"] = std::bind(&AVL::button_update, this);
         this->triggerFunction["Search"] = std::bind(&AVL::button_search, this);
         this->triggerFunction["Quit"] = std::bind(&AVL::button_quit, this);
         this->triggerFunction["SpeedMinus"] = std::bind(&AVL::button_SpeedMinus, this);
@@ -287,10 +285,9 @@ void AVL::initInputFields()
 void AVL::initAnimation()
 {
     this->animation = new AnimationAVL(&this->Colors, (float)(maxSpeed * speedGap) / currentSpeed, codeHighlight);
-    this->animationAVL = dynamic_cast<AnimationAVL*>(this->animation);
-    assert (animationAVL != nullptr);
+    this->animationAVL = dynamic_cast<AnimationAVL *>(this->animation);
+    assert(animationAVL != nullptr);
     this->animationAVL->animationTime = speedGap * (float)maxSpeed;
-
 }
 
 void AVL::initHighlightCode()
@@ -337,24 +334,24 @@ void AVL::button_initialize()
 {
     auto createNewNode = [&](int newValue)
     {
-        if (this->head == nullptr)
-        {
-            this->head = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, 12, &this->font, &this->Colors);
-            this->Nodes.push_back(this->head);
-            ++this->numberNode;
+        // if (this->head == nullptr)
+        // {
+        //     this->head = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, 12, &this->font, &this->Colors);
+        //     this->Nodes.push_back(this->head);
+        //     ++this->numberNode;
 
-            this->head->val = newValue;
-            this->tail = head;
-            return;
-        }
-        /* Add to tail */
-        AVLNode *newNode = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, 12, &this->font, &this->Colors);
-        this->Nodes.push_back(newNode);
-        ++this->numberNode;
+        //     this->head->val = newValue;
+        //     this->tail = head;
+        //     return;
+        // }
+        // /* Add to tail */
+        // AVLNode *newNode = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, 12, &this->font, &this->Colors);
+        // this->Nodes.push_back(newNode);
+        // ++this->numberNode;
 
-        newNode->val = newValue;
-        this->tail->next = newNode;
-        this->tail = newNode;
+        // newNode->val = newValue;
+        // this->tail->next = newNode;
+        // this->tail = newNode;
     };
 
     if (this->choosingChildButton == "1Empty")
@@ -369,13 +366,13 @@ void AVL::button_initialize()
 
     if (this->choosingChildButton == "2Random")
     {
-        if (this->newStepTriggered)
+        /* if (this->newStepTriggered)
         {
             this->newStepTriggered = 0;
             this->inputGuide.setString("");
             if (this->valueFirst > maxNode)
             {
-                this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
+                this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
                 return;
             }
         }
@@ -397,13 +394,13 @@ void AVL::button_initialize()
             this->exist[newValue] = 1;
             createNewNode(newValue);
         }
-        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX);
+        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX); */
         return;
     }
 
     if (this->choosingChildButton == "3Load File")
     {
-        if (!this->newStepTriggered)
+        /* if (!this->newStepTriggered)
             return;
         this->newStepTriggered = 0;
 
@@ -423,140 +420,49 @@ void AVL::button_initialize()
         }
         inp.close();
 
-        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX);
+        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX); */
         return;
     }
 }
 
 void AVL::button_add()
 {
-    if (this->choosingChildButton == "1Head")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->addHead(this->valueFirst);
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("Input a value");
-        }
-    }
-
-    if (this->choosingChildButton == "2Tail")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->addTail(this->valueFirst);
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("Input a value");
-        }
-    }
-
-    if (this->choosingChildButton == "3Middle")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->addMiddle(this->valueFirst, this->valueSecond);
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("Input format: [index],[value]");
-        }
-    }
+    // if (this->choosingChildButton == "1Head")
+    // {
+    //     if (this->newStepTriggered)
+    //     {
+    //         this->newStepTriggered = 0;
+    //         this->inputGuide.setString("");
+    //         this->addHead(this->valueFirst);
+    //         return;
+    //     }
+    //     else
+    //     {
+    //         this->inputGuide.setString("Input a value");
+    //     }
+    // }
 }
 
 void AVL::button_delete()
 {
-
-    if (this->choosingChildButton == "1Head")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->deleteHead();
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("");
-        }
-    }
-
-    if (this->choosingChildButton == "2Tail")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->deleteTail();
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("");
-        }
-    }
-
-    if (this->choosingChildButton == "3Middle")
-    {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->deleteMiddle(this->valueFirst);
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("Input an index");
-        }
-    }
 }
 
-void AVL::button_update()
-{
-    this->choosingChildButton = "1Update";
-
-    if (this->newStepTriggered)
-    {
-        this->newStepTriggered = 0;
-        this->inputGuide.setString("");
-        this->updateNode(this->valueFirst, this->valueSecond);
-        return;
-    }
-    else
-    {
-        this->inputGuide.setString("Input form: [index],[value]");
-    }
-}
 
 void AVL::button_search()
 {
-    this->choosingChildButton = "1Search";
+    // this->choosingChildButton = "1Search";
 
-    if (this->newStepTriggered)
-    {
-        this->newStepTriggered = 0;
-        this->inputGuide.setString("");
-        this->searchNode(this->valueFirst);
-        return;
-    }
-    else
-    {
-        this->inputGuide.setString("Input a value to search");
-    }
+    // if (this->newStepTriggered)
+    // {
+    //     this->newStepTriggered = 0;
+    //     this->inputGuide.setString("");
+    //     this->searchNode(this->valueFirst);
+    //     return;
+    // }
+    // else
+    // {
+    //     this->inputGuide.setString("Input a value to search");
+    // }
 }
 
 void AVL::button_quit()
@@ -564,728 +470,248 @@ void AVL::button_quit()
     this->endState();
 }
 
-/* AVL operations */
+// AVL Operations
+int AVL::heightAVL(AVLNode *N)
+{
+    if (N == NULL)
+        return 0;
+    return N->heightAVL;
+}
+
+AVLNode *AVL::newAVLNode(int key)
+{
+    AVLNode *newNode = new AVLNode();
+    newNode->key = key;
+    newNode->next[0] = NULL;
+    newNode->next[1] = NULL;
+    newNode->heightAVL = 1;
+    this->Nodes.push_back(newNode);
+    return (newNode);
+}
+
+AVLNode *AVL::rightRotate(AVLNode *y)
+{
+    AVLNode *x = y->next[0];
+    AVLNode *T2 = x->next[1];
+    x->next[1] = y;
+    y->next[0] = T2;
+    y->heightAVL = std::max(heightAVL(y->next[0]),
+                         heightAVL(y->next[1])) +
+                1;
+    x->heightAVL = std::max(heightAVL(x->next[0]),
+                         heightAVL(x->next[1])) +
+                1;
+    return x;
+}
+
+AVLNode *AVL::leftRotate(AVLNode *x)
+{
+    AVLNode *y = x->next[1];
+    AVLNode *T2 = y->next[0];
+    y->next[0] = x;
+    x->next[1] = T2;
+    x->heightAVL = std::max(heightAVL(x->next[0]),
+                         heightAVL(x->next[1])) +
+                1;
+    y->heightAVL = std::max(heightAVL(y->next[0]),
+                         heightAVL(y->next[1])) +
+                1;
+    return y;
+}
+
+int AVL::getBalanceFactor(AVLNode *N)
+{
+    if (N == NULL)
+        return 0;
+    return heightAVL(N->next[0]) -
+           heightAVL(N->next[1]);
+}
+
+AVLNode *AVL::insertAVLNode(AVLNode *AVLNode, int key)
+{
+    // Find the correct postion and insert the AVLNode
+    if (AVLNode == NULL)
+        return (newAVLNode(key));
+    if (key < AVLNode->key)
+        AVLNode->next[0] = insertAVLNode(AVLNode->next[0], key);
+    else if (key > AVLNode->key)
+        AVLNode->next[1] = insertAVLNode(AVLNode->next[1], key);
+    else
+        return AVLNode;
+
+    // Update the balance factor of each AVLNode and
+    // balance the tree
+    AVLNode->heightAVL = 1 + std::max(heightAVL(AVLNode->next[0]),
+                                   heightAVL(AVLNode->next[1]));
+    int balanceFactor = getBalanceFactor(AVLNode);
+    if (balanceFactor > 1)
+    {
+        if (key < AVLNode->next[0]->key)
+        {
+            return rightRotate(AVLNode);
+        }
+        else if (key > AVLNode->next[0]->key)
+        {
+            AVLNode->next[0] = leftRotate(AVLNode->next[0]);
+            return rightRotate(AVLNode);
+        }
+    }
+    if (balanceFactor < -1)
+    {
+        if (key > AVLNode->next[1]->key)
+        {
+            return leftRotate(AVLNode);
+        }
+        else if (key < AVLNode->next[1]->key)
+        {
+            AVLNode->next[1] = rightRotate(AVLNode->next[1]);
+            return leftRotate(AVLNode);
+        }
+    }
+    return AVLNode;
+}
+
+AVLNode *AVL::AVLNodeWithMimumValue(AVLNode *node)
+{
+    AVLNode *current = node;
+    while (current->next[0] != NULL)
+        current = current->next[0];
+    return current;
+}
+
+AVLNode *AVL::deleteAVLNode(AVLNode *root, int key)
+{
+    // Find the AVLNode and delete it
+    if (root == NULL)
+        return root;
+    if (key < root->key)
+        root->next[0] = deleteAVLNode(root->next[0], key);
+    else if (key > root->key)
+        root->next[1] = deleteAVLNode(root->next[1], key);
+    else
+    {
+        if ((root->next[0] == NULL) ||
+            (root->next[1] == NULL))
+        {
+            AVLNode *temp = root->next[0] ? root->next[0] : root->next[1];
+            if (temp == NULL)
+            {
+                temp = root;
+                root = NULL;
+            }
+            else
+                *root = *temp;
+            free(temp);
+        }
+        else
+        {
+            AVLNode *temp = AVLNodeWithMimumValue(root->next[1]);
+            root->key = temp->key;
+            root->next[1] = deleteAVLNode(root->next[1],
+                                        temp->key);
+        }
+    }
+
+    if (root == NULL)
+        return root;
+
+    // Update the balance factor of each AVLNode and
+    // balance the tree
+    root->heightAVL = 1 + std::max(heightAVL(root->next[0]),
+                                heightAVL(root->next[1]));
+    int balanceFactor = getBalanceFactor(root);
+    if (balanceFactor > 1)
+    {
+        if (getBalanceFactor(root->next[0]) >= 0)
+        {
+            return rightRotate(root);
+        }
+        else
+        {
+            root->next[0] = leftRotate(root->next[0]);
+            return rightRotate(root);
+        }
+    }
+    if (balanceFactor < -1)
+    {
+        if (getBalanceFactor(root->next[1]) <= 0)
+        {
+            return leftRotate(root);
+        }
+        else
+        {
+            root->next[1] = rightRotate(root->next[1]);
+            return leftRotate(root);
+        }
+    }
+    return root;
+}
+
 // Add
-void AVL::addHead(int nodeValue)
-{   
-    /* Complete all animations */
-    this->prepareNewInstruction();
-    this->button_play();
-    
-    if (nodeValue < 1 || nodeValue > 99)
-    {
-        this->inputWarning.setString("Value should be in range [1..99]");
-        return;
-    }
-
-    if (numberNode + 1 > maxNode)
-    {
-        this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
-        return;
-    }
-
-    if (this->exist[nodeValue])
-    {
-        this->inputWarning.setString("No duplicate vertex allowed!");
-        return;
-    }
-    this->exist[nodeValue] = 1;
-
-    if (this->head == nullptr)
-    {
-        auto addHighlightCodes = [&]
-        {
-            codeHighlight->introText.setString("Add " + std::to_string(nodeValue) + " to empty list");
-            codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");
-            codeHighlight->codeStrings.push_back("head = newNode");
-            codeHighlight->codeStrings.push_back("tail = newNode");
-            this->codeHighlight->updateTexts();
-        };
-        addHighlightCodes();
-
-        /* Create and Show Node */
-        this->head = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, nodeValue, &this->font, &this->Colors);
-        this->head->isNewNode = 1;
-        this->Nodes.push_back(this->head);
-
-        this->tail = this->head;
-
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->showNode(this->head, "newNode", this->numberNode, {0}); }});
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->changeNodeLabel(this->head, "head", {1}); }});
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->changeNodeLabel(this->head, "head/tail", {2}); }});
-
-        return;
-    }
-
-    auto addHighlightCodes = [&]
-    {
-        codeHighlight->introText.setString("Add " + std::to_string(nodeValue) + " to head");
-        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");
-        codeHighlight->codeStrings.push_back("newNode.next = head");
-        codeHighlight->codeStrings.push_back("head = newNode");
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation");
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    float xHead = this->head->x;
-    float yHead = this->head->y;
-
-    /* Create and Show Node */
-    AVLNode *newNode = new AVLNode(xHead, yHead + this->nodeDistanceY,
-                                   this->scale_x, this->scale_y, nodeValue, &this->font, &this->Colors);
-    newNode->isNewNode = 1;
-
-    this->Nodes.push_back(newNode);
-
-    this->animationAVL->instructions.push_back({[this, newNode]()
-                                             { this->animationAVL->showNode(newNode, "newNode", this->numberNode, {0}); }});
-
-    /* Connect Node to Head*/
-    this->animationAVL->instructions.push_back({[this, newNode]()
-                                             { this->animationAVL->connectNodes(newNode, this->head, {1}); }});
-
-    /* Change head to newNode */
-    AVLNode *old_head = this->head;
-    this->animationAVL->instructions.push_back({[this, newNode, old_head]()
-                                             { this->animationAVL->changeHead(this->head, old_head, newNode, {2}); }});
-
-    /* Relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {3}); }});
-}
-
-void AVL::addTail(int nodeValue)
-{   
-    /* Complete all animations */
-    this->prepareNewInstruction();
-    this->button_play();
-
-    if (nodeValue < 1 || nodeValue > 99)
-    {
-        this->inputWarning.setString("Value should be in range [1..99]");
-        return;
-    }
-
-    if (numberNode + 1 > maxNode)
-    {
-        this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
-        return;
-    }
-
-    if (this->exist[nodeValue])
-    {
-        this->inputWarning.setString("No duplicate vertex allowed!");
-        return;
-    }
-    this->exist[nodeValue] = 1;
-
-    if (this->head == nullptr)
-    {
-        auto addHighlightCodes = [&]
-        {
-            codeHighlight->introText.setString("Add " + std::to_string(nodeValue) + " to empty list");
-            codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");
-            codeHighlight->codeStrings.push_back("head = newNode");
-            codeHighlight->codeStrings.push_back("tail = newNode");
-            this->codeHighlight->updateTexts();
-        };
-        addHighlightCodes();
-
-        /* Create and Show Node */
-        this->head = new AVLNode(this->start_x, this->start_y, this->scale_x, this->scale_y, nodeValue, &this->font, &this->Colors);
-        this->head->isNewNode = 1;
-        this->Nodes.push_back(this->head);
-
-        this->tail = head;
-
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->showNode(this->head, "newNode", this->numberNode, {0}); }});
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->changeNodeLabel(this->head, "head", {1}); }});
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->changeNodeLabel(this->head, "head/tail", {2}); }});
-
-        return;
-    }
-
-    auto addHighlightCodes = [&]
-    {
-        codeHighlight->introText.setString("Add " + std::to_string(nodeValue) + " to tail");
-        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");
-        codeHighlight->codeStrings.push_back("tail.next = newNode");
-        codeHighlight->codeStrings.push_back("tail = newNode");
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation");
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    float xTail = this->tail->x;
-    float yTail = this->tail->y;
-
-    /* Create and Show Node */
-    AVLNode *newNode = new AVLNode(xTail + this->nodeDistanceX, yTail,
-                                   this->scale_x, this->scale_y, nodeValue, &this->font, &this->Colors);
-    newNode->isNewNode = 1;
-    this->Nodes.push_back(newNode);
-
-    this->animationAVL->instructions.push_back({[this, newNode]()
-                                             { this->animationAVL->showNode(newNode, "newNode", this->numberNode, {0}); }});
-
-    /* connect Tail to newNode*/
-    this->animationAVL->instructions.push_back({[this, newNode]()
-                                             { this->animationAVL->connectNodes(this->tail, newNode, {1}); }});
-
-    /* change Tail to newNode */
-    AVLNode *old_tail = this->tail;
-    this->animationAVL->instructions.push_back({[this, newNode, old_tail]()
-                                             { this->animationAVL->changeTail(this->tail, old_tail, newNode, {2}); }});
-
-    /* Relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {3}); }});
-}
 
 void AVL::addMiddle(int index, int nodeValue)
-{   
+{
     /* Complete all animations */
     this->prepareNewInstruction();
     this->button_play();
 
-    if (index == -1 || nodeValue == -1)
+    auto preCheck = [&]()
     {
-        this->inputWarning.setString("Wrong input format");
-        return;
-    }
-    if (nodeValue < 1 || nodeValue > 99)
-    {
-        this->inputWarning.setString("Value should be in range [1..99]");
-        return;
-    }
-    if (index < 1 || index > this->numberNode - 2)
-    {
-        this->inputWarning.setString("Index should be in range [1.." + std::to_string(this->numberNode - 2) + "]");
-        return;
-    }
+        if (nodeValue == -1)
+        {
+            this->inputWarning.setString("Wrong input format");
+            return;
+        }
+        if (nodeValue < 1 || nodeValue > 99)
+        {
+            this->inputWarning.setString("Value should be in range [1..99]");
+            return;
+        }
 
-    if (numberNode + 1 > maxNode)
-    {
-        this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
-        return;
-    }
+        if (numberNode + 1 > maxNode)
+        {
+            this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+            return;
+        }
 
-    if (this->exist[nodeValue])
-    {
-        this->inputWarning.setString("No duplicate vertex allowed!");
-        return;
-    }
+        if (this->exist[nodeValue])
+        {
+            this->inputWarning.setString("No duplicate vertex allowed!");
+            return;
+        }
+    };
+    preCheck();
     this->exist[nodeValue] = 1;
-
-
-    if (index > this->numberNode)
-    {
-        return;
-    }
-
-    if (index == 0)
-    {
-        this->addHead(nodeValue);
-        return;
-    }
-    if (index == this->numberNode)
-    {
-        this->addTail(nodeValue);
-        return;
-    }
 
     auto addHighlightCodes = [&]
     {
-        codeHighlight->introText.setString("Add " + std::to_string(nodeValue) + " to index " + std::to_string(index));
+        codeHighlight->introText.setString("Insert " + std::to_string(nodeValue));
         codeHighlight->codeStrings.push_back("Node cur = head");                      // 0
         codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)");      // 1
         codeHighlight->codeStrings.push_back("   cur = cur.next");                    // 2
         codeHighlight->codeStrings.push_back("Node nxt = cur.next");                  // 3
-        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");              // 4
+        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");           // 4
         codeHighlight->codeStrings.push_back("newNode.next = nxt");                   // 5
         codeHighlight->codeStrings.push_back("cur.next = newNode");                   // 6
         codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
         this->codeHighlight->updateTexts();
     };
     addHighlightCodes();
-
-    /* Highlight first node  */
-    AVLNode *cur = this->head;
-
-    this->animationAVL->instructions.push_back(
-        {[this]()
-         {
-             this->animationAVL->highlightCurrentNode(this->head, "h/cur/0", "currentColor", {0});
-         }});
-
-    /* Highlight path to index */
-    for (int i = 0; i < index - 1; ++i)
-    {
-        std::string passedLabel = cur->labelString;
-        if (i == 0)
-            passedLabel = "head/0";
-        std::string currentLabel = "cur/" + std::to_string(i + 1);
-
-        this->animationAVL->instructions.push_back(
-            {[this, cur, passedLabel, currentLabel]()
-                                                 {
-                                                     this->animationAVL->highlightPassedNode(cur, passedLabel, currentLabel, "passedColor", "currentColor", {1, 2});
-                                                 }});
-        cur = cur->next;
-    }
-
-    this->animationAVL->instructions.push_back(
-        {[this, cur, index]()
-         {
-             this->animationAVL->highlightPassedNode(cur, cur->labelString, "nxt/" + std::to_string(index), "passedColor", "reachColor", {3});
-         }});
-
-    /* Create new Node */
-    AVLNode *newNode = new AVLNode(cur->next->x, cur->next->y + this->nodeDistanceY,
-                                   this->scale_x, this->scale_y, nodeValue, &this->font, &this->Colors);
-    newNode->isNewNode = 1;
-    this->Nodes.push_back(newNode);
-    this->animationAVL->instructions.push_back({[this, newNode]()
-                                             { this->animationAVL->showNode(newNode, "newNode", this->numberNode, {4}); }});
-
-    /* Connect newNode to cur->next */
-    this->animationAVL->instructions.push_back({[this, newNode, cur]()
-                                             { this->animationAVL->connectNodes(newNode, cur->next, {5}); }});
-
-    // Connect cur to new Node
-    this->animationAVL->instructions.push_back({[this, cur, newNode]()
-                                             { this->animationAVL->connectNodes(cur, newNode, {6}); }});
-
-    // Relayout
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {7}); }});
 }
 
 // Delete
-void AVL::deleteHead()
-{
-    this->prepareNewInstruction();
-    this->button_play();
-
-    auto addHighlightCodes = [&] {
-        codeHighlight->introText.setString("Delete head");
-        codeHighlight->codeStrings.push_back("if empty, do nothing"); // 0
-        codeHighlight->codeStrings.push_back("Node target = head"); // 1
-        codeHighlight->codeStrings.push_back("Node head = head.next"); // 2
-        codeHighlight->codeStrings.push_back("delete target"); // 3
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 4
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    if (this->head == nullptr) {
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->addCodeLines({0}); }});
-
-        return;
-    }
-
-    /* Highlight current Node */
-    AVLNode *old_head = this->head;
-    this->animationAVL->instructions.push_back({[this, old_head]()
-                                             { this->animationAVL->highlightCurrentNode(old_head, "target", "deleteColor", {1}); }});
-
-    if (this->numberNode > 1)
-    {
-        /* Change head to head->next */
-        AVLNode *new_head = this->head->next;
-        this->animationAVL->instructions.push_back({[this, old_head, new_head]()
-                                                 { this->animationAVL->changeHead(this->head, old_head, new_head, {2}); }});
-    }
-    else
-    {
-        this->head = nullptr;
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->addCodeLines({2}); }});
-    }
-
-    /* Delete head */
-    this->exist[old_head->val] = 0;
-    this->animationAVL->instructions.push_back({[this, old_head]()
-                                             { this->animationAVL->hideNode(old_head, this->numberNode, {3}); }});
-    /* Relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {4}); }});
-
-    return;
-}
-
-void AVL::deleteTail()
-{      
-    this->prepareNewInstruction();
-    this->button_play();
-
-    if (numberNode < 2) {deleteHead(); return;}
-
-    auto addHighlightCodes = [&] {
-        codeHighlight->introText.setString("Delete tail");
-        codeHighlight->codeStrings.push_back("if empty, do nothing"); // 0
-        codeHighlight->codeStrings.push_back("Node cur = head"); // 1
-        codeHighlight->codeStrings.push_back("while (cur.next != tail)"); // 2
-        codeHighlight->codeStrings.push_back("   cur = cur.next"); // 3
-        codeHighlight->codeStrings.push_back("Node target = cur.next"); // 4
-        codeHighlight->codeStrings.push_back("tail = cur"); // 5
-        codeHighlight->codeStrings.push_back("delete target"); // 6
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    assert(this->head != nullptr);
-
-    /* Highlight first node  */
-    AVLNode *cur = this->head;
-
-    this->animationAVL->instructions.push_back(
-        {[this]()
-         {
-             this->animationAVL->highlightCurrentNode(this->head, "h/cur/0", "currentColor", {1});
-         }});
-
-    int index = this->numberNode - 1;
-    /* Highlight path to index */
-    for (int i = 0; i < index - 1; ++i)
-    {
-        std::string passedLabel = cur->labelString;
-        if (i == 0)
-            passedLabel = "head/0";
-        std::string currentLabel = "cur/" + std::to_string(i + 1);
-
-        this->animationAVL->instructions.push_back(
-            {[this, cur, passedLabel, currentLabel]()
-             {
-                 this->animationAVL->highlightPassedNode(cur, passedLabel, currentLabel, "passedColor", "currentColor", {2, 3});
-             }});
-        cur = cur->next;
-    }
-
-    /* Highlight target Node */
-    this->animationAVL->instructions.push_back(
-        {[this, cur, index]()
-         {
-             this->animationAVL->highlightPassedNode(cur, cur->labelString, "target/" + std::to_string(index), "passedColor", "deleteColor", {4});
-         }});
-
-    AVLNode *targetNode = cur->next;
-
-    /* Change tail to cur */
-    this->animationAVL->instructions.push_back({[this, targetNode, cur]()
-                                             {
-                                                 this->animationAVL->changeTail(this->tail, targetNode, cur, {5});
-                                             }});
-
-    /* Delete targetNode */
-    this->exist[targetNode->val] = 0;
-    this->animationAVL->instructions.push_back({[this, targetNode]()
-                                             {
-                                                 this->animationAVL->hideNode(targetNode, this->numberNode, {6});
-                                             },
-                                             [this, cur]()
-                                             {
-                                                 /* Disconnect cur from targetNode */
-                                                 this->animationAVL->connectNodes(cur, nullptr, {});
-                                             }});
-
-    /* Relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {7}); }});
-
-    return;
-}
 
 void AVL::deleteMiddle(int index)
-{   
-    this->prepareNewInstruction();
-    this->button_play();
-
-    if (index < 1 || index > this->numberNode - 2)
-    {
-        this->inputWarning.setString("Index should be in range [1.." + std::to_string(this->numberNode - 2) + "]");
-        return;
-    }
-
-
-    if (index == 0)
-    {
-        this->deleteHead();
-        return;
-    }
-    if (index == this->numberNode)
-    {
-        this->deleteTail();
-        return;
-    }
-
-    auto addHighlightCodes = [&] {
-        codeHighlight->introText.setString("Delete index" + std::to_string(index));
-        codeHighlight->codeStrings.push_back("Node cur = head"); // 0
-        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)"); // 1
-        codeHighlight->codeStrings.push_back("   cur = cur.next"); // 2
-        codeHighlight->codeStrings.push_back("Node target = cur.next"); // 3
-        codeHighlight->codeStrings.push_back("Node nxt = target.next"); // 4
-        codeHighlight->codeStrings.push_back("cur.next = nxt"); // 5
-        codeHighlight->codeStrings.push_back("delete target"); // 6
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    /* Highlight first node  */
-    AVLNode *cur = this->head;
-
-    this->animationAVL->instructions.push_back({[this]()
-                                             {
-                                                 this->animationAVL->highlightCurrentNode(this->head, "h/cur/0", "currentColor", {0});
-                                             }});
-
-    /* Highlight path to index */
-    for (int i = 0; i < index - 1; ++i)
-    {
-        std::string passedLabel = cur->labelString;
-        if (i == 0)
-            passedLabel = "head/0";
-        std::string currentLabel = "cur/" + std::to_string(i + 1);
-
-        this->animationAVL->instructions.push_back(
-            {[this, cur, passedLabel, currentLabel]()
-             {
-                 this->animationAVL->highlightPassedNode(cur, passedLabel, currentLabel, "passedColor", "currentColor", {1, 2});
-             }});
-        cur = cur->next;
-    }
-
-    /* Highlight target Node */
-    this->animationAVL->instructions.push_back(
-        {[this, cur, index]()
-         {
-             this->animationAVL->highlightPassedNode(cur, cur->labelString, "target/" + std::to_string(index), "passedColor", "deleteColor", {3});
-         }});
-
-    /* Highlight target->next */
-    AVLNode *nxt = cur->next->next;
-    this->animationAVL->instructions.push_back({[this, nxt, index]()
-                                             {
-                                                 this->animationAVL->highlightCurrentNode(nxt, "nxt/" + std::to_string(index + 1), "reachColor", {4});
-                                             }});
-
-    AVLNode *targetNode = cur->next;
-
-    /* Connect cur-----cur->next->next ; simultaneously Move targetNode to another position */
-    this->animationAVL->instructions.push_back({[this, targetNode]()
-                                             {
-                                                 this->animationAVL->moveNode(targetNode, targetNode->x, targetNode->y + this->nodeDistanceY);
-                                             },
-                                             [this, targetNode]()
-                                             {
-                                                 this->animationAVL->makeArrow(&targetNode->shape, &targetNode->next->shape, &targetNode->arrow);
-                                             },
-                                             [this, cur]()
-                                             {
-                                                 this->animationAVL->connectNodes(cur, cur->next->next, {5});
-                                             }});
-
-    /* Delete targetNode */
-    this->exist[targetNode->val] = 0;
-    this->animationAVL->instructions.push_back({[this, targetNode]()
-                                             {
-                                                 this->animationAVL->hideNode(targetNode, this->numberNode, {6});
-                                             }});
-
-    /* Relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                             { this->animationAVL->Relayout((numberNode == 0), this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX, {7}); }});
-
-    return;
-}
-
-void AVL::updateNode(int index, int newValue)
-{   
-    this->prepareNewInstruction();
-    this->button_play();
-
-    if (index == -1 || newValue == -1)
-    {
-        this->inputWarning.setString("Wrong input format");
-        return;
-    }
-    if (numberNode == 0)
-    {
-        this->inputWarning.setString("Cannot update empty list");
-        return;
-    }
-    if (newValue < 1 || newValue > 99)
-    {
-        this->inputWarning.setString("Value should be in range [1..99]");
-        return;
-    }
-
-    if (index < 0 || index >= this->numberNode)
-    {
-        this->inputWarning.setString("Index should be in range [0.." + std::to_string(this->numberNode - 1) + "]");
-        return;
-    }
-    if (this->exist[newValue])
-    {
-        this->inputWarning.setString(std::to_string(newValue) + " is already existed");
-        return;
-    }
-
-
-    auto addHighlightCodes = [&] {
-        codeHighlight->introText.setString("Update node at index " + std::to_string(index) + " to " + std::to_string(newValue));
-        codeHighlight->codeStrings.push_back("Node cur = head"); // 0
-        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)"); // 1
-        codeHighlight->codeStrings.push_back("   cur = cur.next"); // 2
-        codeHighlight->codeStrings.push_back("Node target = cur.next"); // 3
-        codeHighlight->codeStrings.push_back("target.val = newVal"); // 4
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    if (index == 0)
-    {
-        AVLNode *targetNode = head;
-
-        this->animationAVL->instructions.push_back({[this, targetNode]()
-                                                 {
-                                                     this->animationAVL->highlightCurrentNode(targetNode, "target/0", "reachColor", {});
-                                                 }});
-
-        /* Change targetNode to newValue */
-        this->animationAVL->instructions.push_back({[this, targetNode, newValue]()
-                                                 {
-                                                     this->animationAVL->changeNodeValue(targetNode, newValue, {});
-                                                 }});
-
-        this->exist[targetNode->val] = 0;
-        this->exist[newValue] = 1;
-
-        return;
-    }
-
-    /* Highlight first node  */
-    AVLNode *cur = this->head;
-
-    this->animationAVL->instructions.push_back({[this]()
-                                             {
-                                                 this->animationAVL->highlightCurrentNode(this->head, "h/cur/0", "currentColor", {0});
-                                             }});
-
-    /* Highlight path to index */
-    for (int i = 0; i < index - 1; ++i)
-    {
-        std::string passedLabel = cur->labelString;
-        if (i == 0)
-            passedLabel = "head/0";
-        std::string currentLabel = "cur/" + std::to_string(i + 1);
-
-        this->animationAVL->instructions.push_back({[this, cur, passedLabel, currentLabel]()
-                                                 {
-                                                     this->animationAVL->highlightPassedNode(cur, passedLabel, currentLabel, "passedColor", "currentColor", {1, 2});
-                                                 }});
-        cur = cur->next;
-    }
-
-    /* Highlight target Node */
-    this->animationAVL->instructions.push_back({[this, cur, index]()
-                                             {
-                                                 this->animationAVL->highlightPassedNode(cur, cur->labelString, "target/" + std::to_string(index), "passedColor", "reachColor", {3});
-                                             }});
-
-    AVLNode *targetNode = cur->next;
-    /* Change targetNode to newValue */
-    this->animationAVL->instructions.push_back({[this, targetNode, newValue]()
-                                             {
-                                                 this->animationAVL->changeNodeValue(targetNode, newValue, {4});
-                                             }});
-
-    this->exist[targetNode->val] = 0;
-    this->exist[newValue] = 1;
-}
-
-void AVL::searchNode(int searchValue)
 {
-    this->prepareNewInstruction();
-    this->button_play();
 
-    if (searchValue < 1 || searchValue > 99)
-    {
-        this->inputWarning.setString("Value should be in range [1..99]");
-        return;
-    }
-
-    if (this->head == nullptr)
-    {
-        this->inputWarning.setString("Empty list");
-        return;
-    }
-
-    auto addHighlightCodes = [&] {
-        codeHighlight->introText.setString("Search node with value " + std::to_string(searchValue));
-        codeHighlight->codeStrings.push_back("Node cur = head, index = 0"); // 0
-        codeHighlight->codeStrings.push_back("while (cur != nullptr && cur.val != v)"); // 1
-        codeHighlight->codeStrings.push_back("   ++index, cur = cur.next"); // 2
-        codeHighlight->codeStrings.push_back("   if (cur == nullptr)"); // 3
-        codeHighlight->codeStrings.push_back("      return NOT_FOUND"); // 4
-        codeHighlight->codeStrings.push_back("return index"); // 5
-        this->codeHighlight->updateTexts();
-    };
-    addHighlightCodes();
-
-    /* Highlight first node  */
-    AVLNode *cur = this->head;
-
-    this->animationAVL->instructions.push_back({[this]()
-                                             {
-                                                 this->animationAVL->highlightCurrentNode(this->head, "h/cur/0", "currentColor", {0});
-                                             }});
-
-    /* Highlight path to index */
-    for (int i = 0; i < this->numberNode; ++i)
-    {
-        if (cur->val == searchValue)
-        {
-            this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->addCodeLines({5}); }});
-            return;
-        }
-
-        std::string passedLabel = cur->labelString;
-        if (i == 0)
-            passedLabel = "head/0";
-        std::string currentLabel = "cur/" + std::to_string(i + 1);
-
-        this->animationAVL->instructions.push_back({[this, cur, passedLabel, currentLabel]()
-                                                 {
-                                                     this->animationAVL->highlightPassedNode(cur, passedLabel, currentLabel, "passedColor", "currentColor", {1, 2, 3});
-                                                 }});
-
-        cur = cur->next;
-    }
-
-    //Not Found
-    this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->addCodeLines({4}); }});
 }
 
 void AVL::prepareNewInstruction()
-{   
+{
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
-    this->animationAVL->newInstruction(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX);
+    this->animationAVL->newInstruction(this->root, this->start_x, this->start_y, this->nodeDistanceX);
     this->codeHighlight->reset();
 }
 
@@ -1447,7 +873,7 @@ void AVL::updateSFMLEvents(const float &dt, sf::Event &event)
 }
 
 void AVL::update(const float &dt)
-{   
+{
     this->window->setTitle("Singly Linked List");
     this->updateMousePositions();
     this->updateInput(dt);
@@ -1589,16 +1015,15 @@ void AVL::reset()
 {
     exist.assign((int)exist.size(), 0);
     this->DeleteNodePointers();
-    this->head = nullptr;
-    this->tail = nullptr;
+    this->root = nullptr;
     this->numberNode = 0;
 
     delete (this->animation);
-    
+
     this->codeHighlight->reset();
     this->animation = new AnimationAVL(&this->Colors, (float)(maxSpeed * speedGap) / currentSpeed, codeHighlight);
-    this->animationAVL = dynamic_cast<AnimationAVL*>(this->animation);
-    assert (animationAVL != nullptr);
+    this->animationAVL = dynamic_cast<AnimationAVL *>(this->animation);
+    assert(animationAVL != nullptr);
 
     this->newStepTriggered = 0;
     this->doneAnimation = 1;

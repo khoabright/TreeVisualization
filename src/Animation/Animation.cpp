@@ -129,9 +129,9 @@ void Animation::resetStartStep()
 
 void Animation::triggerOneIns(int index)
 {   
-    curChildIndex = 0;
+    stepChildIndex = 0;
     for (auto &ins : instructions[index]) {
-        ++curChildIndex;
+        ++stepChildIndex;
         ins();
     }
 }
