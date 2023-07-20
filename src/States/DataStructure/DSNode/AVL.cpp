@@ -427,20 +427,20 @@ void AVL::button_initialize()
 
 void AVL::button_add()
 {
-    // if (this->choosingChildButton == "1Head")
-    // {
-    //     if (this->newStepTriggered)
-    //     {
-    //         this->newStepTriggered = 0;
-    //         this->inputGuide.setString("");
-    //         this->addHead(this->valueFirst);
-    //         return;
-    //     }
-    //     else
-    //     {
-    //         this->inputGuide.setString("Input a value");
-    //     }
-    // }
+    if (this->choosingChildButton == "1Head")
+    {
+        if (this->newStepTriggered)
+        {
+            this->newStepTriggered = 0;
+            this->inputGuide.setString("");
+            this->operation_add(this->valueFirst);
+            return;
+        }
+        else
+        {
+            this->inputGuide.setString("Input a value");
+        }
+    }
 }
 
 void AVL::button_delete()
@@ -480,10 +480,8 @@ int AVL::heightAVL(AVLNode *N)
 
 AVLNode *AVL::newAVLNode(int key)
 {
-    AVLNode *newNode = new AVLNode();
+    AVLNode *newNode = new AVLNode(start_x, start_y, scale_x, scale_y, key, &font, &Colors);
     newNode->key = key;
-    newNode->next[0] = NULL;
-    newNode->next[1] = NULL;
     newNode->heightAVL = 1;
     this->Nodes.push_back(newNode);
     return (newNode);
@@ -530,8 +528,10 @@ int AVL::getBalanceFactor(AVLNode *N)
 AVLNode *AVL::insertAVLNode(AVLNode *AVLNode, int key)
 {
     // Find the correct postion and insert the AVLNode
-    if (AVLNode == NULL)
+    if (AVLNode == NULL) {
         return (newAVLNode(key));
+    }
+
     if (key < AVLNode->key)
         AVLNode->next[0] = insertAVLNode(AVLNode->next[0], key);
     else if (key > AVLNode->key)
@@ -649,7 +649,7 @@ AVLNode *AVL::deleteAVLNode(AVLNode *root, int key)
 
 // Add
 
-void AVL::addMiddle(int index, int nodeValue)
+void AVL::operation_add(int nodeValue)
 {
     /* Complete all animations */
     this->prepareNewInstruction();
@@ -697,6 +697,15 @@ void AVL::addMiddle(int index, int nodeValue)
         this->codeHighlight->updateTexts();
     };
     addHighlightCodes();
+
+    if (root == nullptr) {
+        root = newAVLNode(nodeValue);
+        this->animationAVL->instructions.push_back({[this]()
+                                                 { this->animationAVL->showNode(root, "root", numberNode, {0}); }});
+        return;
+    }
+
+    insertAVLNode(this->root, nodeValue);
 }
 
 // Delete

@@ -66,7 +66,7 @@ private:
     AVLNode *deleteAVLNode(AVLNode *root, int key);
 
     // Add
-    void addMiddle(int index, int nodeValue);
+    void operation_add(int nodeValue);
 
     // Delete
     void deleteMiddle(int index);
