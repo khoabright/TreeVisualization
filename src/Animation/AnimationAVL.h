@@ -34,13 +34,12 @@ public:
     void highlightCurrentNode(AVLNode *targetNode, std::string targetLabel, std::string targetColor, std::vector<int> codeLines);
 
     void moveNode(AVLNode *targetNode, float x1, float y1);
-    void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 
     void Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance, std::vector<int> codeLines);
 
     //Reset
-    void updateNodePosition(AVLNode *root, float start_x, float start_y, float distance);
-    void newInstruction(AVLNode *root, float start_x, float start_y, float distance);
+    void updateNodePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y);
+    void newInstruction(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y);
 };
 
 #endif

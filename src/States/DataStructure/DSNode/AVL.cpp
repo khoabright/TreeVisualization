@@ -67,6 +67,7 @@ void AVL::initTriggerFunction()
         this->triggerFunction["Initialize"] = std::bind(&AVL::button_initialize, this);
         this->triggerFunction["Add"] = std::bind(&AVL::button_add, this);
         this->triggerFunction["Delete"] = std::bind(&AVL::button_delete, this);
+        this->triggerFunction["Update"] = std::bind(&AVL::button_update, this);
         this->triggerFunction["Search"] = std::bind(&AVL::button_search, this);
         this->triggerFunction["Quit"] = std::bind(&AVL::button_quit, this);
         this->triggerFunction["SpeedMinus"] = std::bind(&AVL::button_SpeedMinus, this);
@@ -142,46 +143,10 @@ void AVL::initChildButtons()
 
     auto init_add = [&]()
     {
-        ++idy;
-        this->childButtons["Add"].insert({"1Head", nullptr});
-        this->childButtons["Add"].insert({"2Tail", nullptr});
-        this->childButtons["Add"].insert({"3Middle", nullptr});
-
-        int idx = 0;
-        for (auto &it : this->childButtons["Add"])
-        {
-            it.second = new Button(
-                this->childButtonOriginX + (idx++) * (this->childButtonDistanceX + this->childButtonWidth),
-                this->childButtonOriginY + idy * (this->childButtonDistanceY + this->childButtonHeight),
-                this->scale_x, this->scale_y,
-                &this->font, it.first.substr(1), (int)(scale_y * 16.f),
-                sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
-                sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
-                1, this->childButtonWidth, this->childButtonHeight);
-        }
     };
 
     auto init_delete = [&]()
     {
-        ++idy;
-        this->childButtons["Delete"].insert({"1Head", nullptr});
-        this->childButtons["Delete"].insert({"2Tail", nullptr});
-        this->childButtons["Delete"].insert({"3Middle", nullptr});
-
-        int idx = 0;
-        for (auto &it : this->childButtons["Delete"])
-        {
-            it.second = new Button(
-                this->childButtonOriginX + (idx++) * (this->childButtonDistanceX + this->childButtonWidth),
-                this->childButtonOriginY + idy * (this->childButtonDistanceY + this->childButtonHeight),
-                this->scale_x, this->scale_y,
-                &this->font, it.first.substr(1), (int)(scale_y * 16.f),
-                sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
-                sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
-                1, this->childButtonWidth, this->childButtonHeight);
-        }
-        this->childButtons["Delete"]["1Head"]->instantTrigger = true;
-        this->childButtons["Delete"]["2Tail"]->instantTrigger = true;
     };
 
     auto init_update = [&]() {
@@ -226,19 +191,24 @@ void AVL::initInputFields()
     auto init_add = [&]()
     {
         ++idy;
-        this->inputFields["Add"].insert({"1Head", nullptr});
-        this->inputFields["Add"].insert({"2Tail", nullptr});
-        this->inputFields["Add"].insert({"3Middle", nullptr});
+        // this->inputFields["Add"].insert({"1Head", nullptr});
+        // this->inputFields["Add"].insert({"2Tail", nullptr});
+        // this->inputFields["Add"].insert({"3Middle", nullptr});
 
-        int idx = 0;
-        for (auto &it : this->inputFields["Add"])
-        {
-            it.second = new InputField(this->inputFieldOriginX + (idx++) * (this->inputFieldWidth + this->inputFieldDistanceX),
-                                       this->inputFieldOriginY + idy * (this->inputFieldHeight + this->inputFieldDistanceY),
-                                       this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
-                                       &this->font, this->inputFieldCharacterSize,
-                                       sf::Color::White, sf::Color::White, sf::Color::Black);
-        }
+        // int idx = 0;
+        // for (auto &it : this->inputFields["Add"])
+        // {
+        //     it.second = new InputField(this->inputFieldOriginX + (idx++) * (this->inputFieldWidth + this->inputFieldDistanceX),
+        //                                this->inputFieldOriginY + idy * (this->inputFieldHeight + this->inputFieldDistanceY),
+        //                                this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
+        //                                &this->font, this->inputFieldCharacterSize,
+        //                                sf::Color::White, sf::Color::White, sf::Color::Black);
+        // }
+        this->inputFields["Add"]["1Head"] = new InputField(this->inputFieldOriginX,
+                                                          this->inputFieldOriginY + idy * (0 + this->inputFieldDistanceY),
+                                                          this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
+                                                          &this->font, this->inputFieldCharacterSize,
+                                                          sf::Color::White, sf::Color::White, sf::Color::Black);
     };
 
     auto init_delete = [&]()
@@ -427,19 +397,18 @@ void AVL::button_initialize()
 
 void AVL::button_add()
 {
-    if (this->choosingChildButton == "1Head")
+    this->choosingChildButton = "1Head";
+
+    if (this->newStepTriggered)
     {
-        if (this->newStepTriggered)
-        {
-            this->newStepTriggered = 0;
-            this->inputGuide.setString("");
-            this->operation_add(this->valueFirst);
-            return;
-        }
-        else
-        {
-            this->inputGuide.setString("Input a value");
-        }
+        this->newStepTriggered = 0;
+        this->inputGuide.setString("");
+        this->operation_add(this->valueFirst);
+        return;
+    }
+    else
+    {
+        this->inputGuide.setString("Input a value");
     }
 }
 
@@ -447,22 +416,25 @@ void AVL::button_delete()
 {
 }
 
+void AVL::button_update()
+{
+}
 
 void AVL::button_search()
 {
-    // this->choosingChildButton = "1Search";
+    this->choosingChildButton = "1Search";
 
-    // if (this->newStepTriggered)
-    // {
-    //     this->newStepTriggered = 0;
-    //     this->inputGuide.setString("");
-    //     this->searchNode(this->valueFirst);
-    //     return;
-    // }
-    // else
-    // {
-    //     this->inputGuide.setString("Input a value to search");
-    // }
+    if (this->newStepTriggered)
+    {
+        this->newStepTriggered = 0;
+        this->inputGuide.setString("");
+        // this->searchNode(this->valueFirst);
+        return;
+    }
+    else
+    {
+        this->inputGuide.setString("Input a value to search");
+    }
 }
 
 void AVL::button_quit()
@@ -471,11 +443,11 @@ void AVL::button_quit()
 }
 
 // AVL Operations
-int AVL::heightAVL(AVLNode *N)
+int AVL::heightAVL(AVLNode *node)
 {
-    if (N == NULL)
+    if (node == NULL)
         return 0;
-    return N->heightAVL;
+    return node->heightAVL;
 }
 
 AVLNode *AVL::newAVLNode(int key)
@@ -525,50 +497,66 @@ int AVL::getBalanceFactor(AVLNode *N)
            heightAVL(N->next[1]);
 }
 
-AVLNode *AVL::insertAVLNode(AVLNode *AVLNode, int key)
+AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
 {
-    // Find the correct postion and insert the AVLNode
-    if (AVLNode == NULL) {
+    // Find the correct postion and insert the curNode
+    if (curNode == NULL) {
         return (newAVLNode(key));
     }
 
-    if (key < AVLNode->key)
-        AVLNode->next[0] = insertAVLNode(AVLNode->next[0], key);
-    else if (key > AVLNode->key)
-        AVLNode->next[1] = insertAVLNode(AVLNode->next[1], key);
+    int direction = 1;
+    if (key < curNode->key)
+    {   
+        direction = 0;
+        curNode->next[0] = insertAVLNode(curNode->next[0], key);
+    }
+    else if (key > curNode->key)
+        curNode->next[1] = insertAVLNode(curNode->next[1], key);
     else
-        return AVLNode;
+        return curNode;
 
-    // Update the balance factor of each AVLNode and
+    /* Make animation for connecting to new node */
+    if (curNode->next[direction]->key == key)
+    {   
+        RecalTreeAmountLeftRight(root);
+        RecalTreePosition(root, start_x, start_y, nodeDistanceX, nodeDistanceY);
+        this->animationAVL->instructions.push_back(
+            {[this, curNode, direction]()
+             { this->animationAVL->showNode(curNode->next[direction], "newNode", numberNode, {2, 4}); },
+             [this, curNode, direction]()
+             { this->animationAVL->connectNodes(curNode, curNode->next[direction], direction, {3}); }});
+    }
+
+    // Update the balance factor of each curNode and
     // balance the tree
-    AVLNode->heightAVL = 1 + std::max(heightAVL(AVLNode->next[0]),
-                                   heightAVL(AVLNode->next[1]));
-    int balanceFactor = getBalanceFactor(AVLNode);
+    curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
+                                   heightAVL(curNode->next[1]));
+    int balanceFactor = getBalanceFactor(curNode);
     if (balanceFactor > 1)
     {
-        if (key < AVLNode->next[0]->key)
+        if (key < curNode->next[0]->key)
         {
-            return rightRotate(AVLNode);
+            return rightRotate(curNode);
         }
-        else if (key > AVLNode->next[0]->key)
+        else if (key > curNode->next[0]->key)
         {
-            AVLNode->next[0] = leftRotate(AVLNode->next[0]);
-            return rightRotate(AVLNode);
+            curNode->next[0] = leftRotate(curNode->next[0]);
+            return rightRotate(curNode);
         }
     }
     if (balanceFactor < -1)
     {
-        if (key > AVLNode->next[1]->key)
+        if (key > curNode->next[1]->key)
         {
-            return leftRotate(AVLNode);
+            return leftRotate(curNode);
         }
-        else if (key < AVLNode->next[1]->key)
+        else if (key < curNode->next[1]->key)
         {
-            AVLNode->next[1] = rightRotate(AVLNode->next[1]);
-            return leftRotate(AVLNode);
+            curNode->next[1] = rightRotate(curNode->next[1]);
+            return leftRotate(curNode);
         }
     }
-    return AVLNode;
+    return curNode;
 }
 
 AVLNode *AVL::AVLNodeWithMimumValue(AVLNode *node)
@@ -720,7 +708,7 @@ void AVL::prepareNewInstruction()
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
-    this->animationAVL->newInstruction(this->root, this->start_x, this->start_y, this->nodeDistanceX);
+    this->animationAVL->newInstruction(this->root, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
     this->codeHighlight->reset();
 }
 

@@ -10,7 +10,7 @@ class AVL : public DataStructure
 {
 private:
     // Variables
-    float start_x = 90, start_y = 110;
+    float start_x = 580, start_y = 110;
     int maxNode = 12;
     int numberNode = 0;
 
@@ -51,6 +51,7 @@ private:
     void button_initialize();
     void button_add();
     void button_delete();
+    void button_update();
     void button_search();
     void button_quit();
 

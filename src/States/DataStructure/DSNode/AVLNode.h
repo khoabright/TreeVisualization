@@ -13,8 +13,9 @@ struct AVLNode
 {   
     AVLNode *next[numChild];
 
-    int key, heightAVL;
-    float scale_x, scale_y, x, y, width, height;
+    int key, heightAVL, depthAVL = 0; // depth compared to root
+    int amountLeft = 0, amountRight = 0; // amount of nodes visualized to the left/right (not include other side of root and root)
+    float scale_x, scale_y, x, y, width, height; // height of the node
     float standard_width = 40.f, standard_height = 40.f; /* Dimension I used in 800x600 and radius = 40 */
     float x_center, y_center;
     float radius = 20.f;
@@ -91,5 +92,10 @@ struct AVLNode
     void renderAnimation();
     void render(sf::RenderTarget *target);
 };
+
+void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+int RecalTreeAmountLeftRight(AVLNode *root, bool direction = 1); // direction = 0/1 is calculating amountLeft/Right
+int RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, bool direction = 1);
+void ResetTree(AVLNode *root);
 
 #endif

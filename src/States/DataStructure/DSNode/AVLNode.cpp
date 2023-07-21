@@ -307,3 +307,167 @@ void AVLNode::render(sf::RenderTarget *target)
     if (this->showLabel)
         target->draw(this->labelText);
 }
+
+void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
+{
+    /* Replace targetArrow such that it point from node1 -> node 2 */
+
+    float pi = atan(1) * 4;
+    float arrow_width, arrow_height, r1, r2, x1, y1, x2, y2;
+    float alpha, AOM, BOM, OA, AOB, Ax, Ay, aOB, ax, ay, x, y, s1, s2, distance;
+
+    auto initVariables = [&]()
+    {
+        arrow_width = targetArrow->getLocalBounds().width;
+        arrow_height = targetArrow->getLocalBounds().height;
+
+        r1 = node1->getRadius();
+        r2 = node2->getRadius();
+
+        x1 = node1->getPosition().x;
+        y1 = node1->getPosition().y;
+
+        x2 = node2->getPosition().x;
+        y2 = node2->getPosition().y;
+    };
+
+    auto calNewVariables = [&]()
+    {
+        /* pay attention for zero denominator */
+        if (x1 == x2)
+            alpha = pi / 2;
+        else
+        {
+            alpha = atan(fabs(y2 - y1) / fabs(x2 - x1));
+        }
+
+        if (r1 == 0)
+            AOM = pi / 2;
+        else
+            AOM = atan((arrow_height / 2) / r1);
+
+        BOM = pi / 2 - alpha;
+        OA = (arrow_height / 2) / sin(AOM);
+
+        AOB = AOM + BOM;
+        Ax = OA * sin(AOB);
+        Ay = OA * cos(AOB);
+
+        aOB = BOM - AOM;
+        ax = OA * sin(aOB);
+        ay = OA * cos(aOB);
+
+        x = Ax + r1 + x1;
+        y = Ay + r1 + y1;
+
+        s1 = (x2 - x1);
+        s2 = (y2 - y1);
+
+        distance = sqrt(s1 * s1 + s2 * s2);
+    };
+    initVariables();
+    calNewVariables();
+
+    if (x1 > x2)
+    {
+        if (y1 > y2)
+        {
+            alpha = pi + alpha;
+            x = 2 * (x1 + r1) - x;
+            y = 2 * (y1 + r1) - y;
+        }
+        else
+        {
+            alpha = pi - alpha;
+            x = ax + r1 + x1;
+            y = ay + r1 + y1;
+            x = 2 * (x1 + r1) - x;
+        }
+    }
+    else if (y1 > y2)
+    {
+        alpha = 2 * pi - alpha;
+        x = ax + r1 + x1;
+        y = ay + r1 + y1;
+        y = 2 * (y1 + r1) - y;
+    }
+
+    targetArrow->setSize(sf::Vector2f(distance - r1 - r2, arrow_height));
+    targetArrow->setPosition(x, y);
+    targetArrow->setRotation(alpha / pi * 180);
+}
+
+int RecalTreeAmountLeftRight(AVLNode *root, bool direction)
+{   
+    if (root == nullptr) return -1;
+    if (root->depthAVL == 0) {
+        RecalTreeAmountLeftRight(root->next[0], 1);
+        RecalTreeAmountLeftRight(root->next[1], 0);
+        return 0;
+    }
+    if (direction == 1) {
+        root->amountRight += RecalTreeAmountLeftRight(root->next[1], direction) + 1;
+        if (root->next[0]) root->next[0]->amountRight = root->amountRight;
+        RecalTreeAmountLeftRight(root->next[0], direction);
+        return root->amountRight;
+    }
+    if (direction == 0) {
+        root->amountLeft += RecalTreeAmountLeftRight(root->next[0], direction) + 1;
+        if (root->next[1]) root->next[1]->amountLeft = root->amountLeft;
+        RecalTreeAmountLeftRight(root->next[1], direction);
+        return root->amountLeft;
+    }
+    return 0;
+}
+
+int RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, bool direction)
+{
+    if (root == nullptr) return 0;
+
+    if (root->next[0]) root->next[0]->depthAVL = root->depthAVL + 1;
+    if (root->next[1]) root->next[1]->depthAVL = root->depthAVL + 1;
+
+    if (root->depthAVL == 0) {
+        RecalTreePosition(root->next[0], start_x, start_y, distance_x, distance_y, 0);
+        RecalTreePosition(root->next[1], start_x, start_y, distance_x, distance_y, 1);
+        std::cout<<start_x<<' '<<start_y<<' '<<root->x<<' '<<root->y<<'\n';
+        return 0;
+    }
+
+    RecalTreePosition(root->next[0], start_x, start_y, distance_x, distance_y, direction);
+    RecalTreePosition(root->next[1], start_x, start_y, distance_x, distance_y, direction);
+    
+    if (direction == 1)
+        root->newPos(sf::Vector2f(start_x + distance_x * (root->amountLeft + 1 /* root */), start_y + distance_y * root->depthAVL));
+
+    if (direction == 0)
+        root->newPos(sf::Vector2f(start_x - distance_x * (root->amountRight + 1 /* root */), start_y + distance_y * root->depthAVL));
+
+    root->nextPos();
+
+    std::cout<<"dir,nL,nR,X,Y="<<direction << ' ' << root->amountLeft<<' '<<root->amountRight<<' '<<root->x<<' '<<root->y<<' '<<root->x_center<<' '<<root->y_center<<'\n';
+    return 0;
+}
+
+void ResetTree(AVLNode *root)
+{   
+    if (root == nullptr) return;
+    ResetTree(root->next[0]);
+    ResetTree(root->next[1]);
+
+    std::cout<<"\nkey,left,right = "<<root->key<<' ';
+    if (root->next[0]) std::cout<<root->next[0]->key << ' ';
+    if (root->next[1]) std::cout<<root->next[1]->key << ' ';
+
+    root->labelString = "";
+    root->showNode = 1;
+
+    for (int i = 0; i < numChild; ++i)
+        if (root->next[i])
+        {
+            makeArrow(&root->shape, &root->next[i]->shape, &root->arrow[i]);
+            root->showArrow[i] = 1;
+        }
+
+    root->reset();
+}
