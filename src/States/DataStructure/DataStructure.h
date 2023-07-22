@@ -34,7 +34,7 @@ protected:
     float stepY = 30;
 
 
-    int currentSpeed = 1;
+    int currentSpeed = 3;
     float speedGap = 0.25;
     int maxSpeed = 8;
 

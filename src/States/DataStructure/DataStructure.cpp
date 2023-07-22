@@ -79,7 +79,7 @@ void DataStructure::initText()
 {
     //Speed
     auto SpeedInit = [&]() {
-        speedText.setString("1x");
+        speedText.setString(std::to_string(this->currentSpeed) + "x");
         speedText.setCharacterSize(1.5 * this->characterSize);
         speedText.setFont(this->font);
     };

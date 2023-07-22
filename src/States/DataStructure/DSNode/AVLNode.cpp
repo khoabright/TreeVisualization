@@ -45,7 +45,7 @@ AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _key, sf::F
     this->height = shape.getGlobalBounds().height;
 
     shape.setPosition(x, y);
-    shape.setOutlineThickness(3);
+    shape.setOutlineThickness(2.5);
 
 
     //Color
@@ -63,13 +63,13 @@ AVLNode::AVLNode(float x, float y, float scale_x, float scale_y, int _key, sf::F
 
     //Text
     text.setFont(*font);
-    text.setCharacterSize(25 * scale_x * scale_y);
+    text.setCharacterSize(textSize * scale_x * scale_y);
     text.setFillColor(Colors->at("characterColor"));
     
     //Label
     labelColor = Colors->at("labelColor");
     labelText.setFont(*font);
-    labelText.setCharacterSize(20 * scale_x * scale_y);
+    labelText.setCharacterSize(labelTextSize * scale_x * scale_y);
     labelText.setFillColor(this->labelColor);
     labelText.setStyle(sf::Text::Bold);
     newLabel("");
@@ -397,56 +397,58 @@ void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShap
     targetArrow->setRotation(alpha / pi * 180);
 }
 
-int RecalTreeAmountLeftRight(AVLNode *root, bool direction)
+void RecalTreeAmountLeftRight(AVLNode *root, int direction)
 {   
-    if (root == nullptr) return -1;
-    if (root->depthAVL == 0) {
-        RecalTreeAmountLeftRight(root->next[0], 1);
-        RecalTreeAmountLeftRight(root->next[1], 0);
-        return 0;
-    }
-    if (direction == 1) {
-        root->amountRight += RecalTreeAmountLeftRight(root->next[1], direction) + 1;
-        if (root->next[0]) root->next[0]->amountRight = root->amountRight;
-        RecalTreeAmountLeftRight(root->next[0], direction);
-        return root->amountRight;
-    }
-    if (direction == 0) {
-        root->amountLeft += RecalTreeAmountLeftRight(root->next[0], direction) + 1;
-        if (root->next[1]) root->next[1]->amountLeft = root->amountLeft;
-        RecalTreeAmountLeftRight(root->next[1], direction);
-        return root->amountLeft;
-    }
-    return 0;
-}
-
-int RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, bool direction)
-{
-    if (root == nullptr) return 0;
+    if (root == nullptr) return;
 
     if (root->next[0]) root->next[0]->depthAVL = root->depthAVL + 1;
     if (root->next[1]) root->next[1]->depthAVL = root->depthAVL + 1;
+    
+    if (root->depthAVL == 0) {
+        if (root->next[0])
+            root->next[0]->amountLR[0] = root->next[0]->amountLR[1] = 0;
+        if (root->next[1])
+            root->next[1]->amountLR[0] = root->next[1]->amountLR[1] = 0;
+        RecalTreeAmountLeftRight(root->next[0], 1);
+        RecalTreeAmountLeftRight(root->next[1], 0);
+        return;
+    }
+    
+    if (root->next[direction]) root->next[direction]->amountLR[direction] = root->amountLR[direction];
+    RecalTreeAmountLeftRight(root->next[direction], direction);
+    if (root->next[direction]) root->amountLR[direction] += root->next[direction]->subTreeSize;
+    if (root->next[direction ^ 1]) root->next[direction ^ 1]->amountLR[direction] = root->amountLR[direction] + 1 /* itself */;
+    RecalTreeAmountLeftRight(root->next[direction ^ 1], direction);
+
+    root->subTreeSize = 1;
+    if (root->next[0]) root->subTreeSize += root->next[0]->subTreeSize;
+    if (root->next[1]) root->subTreeSize += root->next[1]->subTreeSize;
+
+    // std::cout<<"\nkey,size,amLR="<<root->key<<' '<<root->subTreeSize<<' '<<root->amountLR[0]<<' '<<root->amountLR[1]<<'\n';
+    return;
+}
+
+void RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction)
+{
+    if (root == nullptr) return;
 
     if (root->depthAVL == 0) {
-        RecalTreePosition(root->next[0], start_x, start_y, distance_x, distance_y, 0);
+        RecalTreePosition(root->next[0], start_x, start_y, distance_x, distance_y, -1);
         RecalTreePosition(root->next[1], start_x, start_y, distance_x, distance_y, 1);
-        std::cout<<start_x<<' '<<start_y<<' '<<root->x<<' '<<root->y<<'\n';
-        return 0;
+        root->newPos(sf::Vector2f(start_x, start_y));
+        return;
     }
 
     RecalTreePosition(root->next[0], start_x, start_y, distance_x, distance_y, direction);
     RecalTreePosition(root->next[1], start_x, start_y, distance_x, distance_y, direction);
-    
-    if (direction == 1)
-        root->newPos(sf::Vector2f(start_x + distance_x * (root->amountLeft + 1 /* root */), start_y + distance_y * root->depthAVL));
 
-    if (direction == 0)
-        root->newPos(sf::Vector2f(start_x - distance_x * (root->amountRight + 1 /* root */), start_y + distance_y * root->depthAVL));
+    root->newPos(sf::Vector2f(start_x + direction * distance_x * (root->amountLR[std::max(-direction, 0)] + 1 /* root */),
+                              start_y + distance_y * root->depthAVL));
 
     root->nextPos();
 
-    std::cout<<"dir,nL,nR,X,Y="<<direction << ' ' << root->amountLeft<<' '<<root->amountRight<<' '<<root->x<<' '<<root->y<<' '<<root->x_center<<' '<<root->y_center<<'\n';
-    return 0;
+    // std::cout<<"key,dir,nL,nR,X,Y="<<root->key<<' '<<direction << ' ' << root->amountLR[0]<<' '<<root->amountLR[1]<<' '<<root->x<<' '<<root->y<<' '<<root->x_center<<' '<<root->y_center<<'\n';
+    return;
 }
 
 void ResetTree(AVLNode *root)
@@ -455,19 +457,32 @@ void ResetTree(AVLNode *root)
     ResetTree(root->next[0]);
     ResetTree(root->next[1]);
 
-    std::cout<<"\nkey,left,right = "<<root->key<<' ';
-    if (root->next[0]) std::cout<<root->next[0]->key << ' ';
-    if (root->next[1]) std::cout<<root->next[1]->key << ' ';
-
     root->labelString = "";
     root->showNode = 1;
 
-    for (int i = 0; i < numChild; ++i)
+    for (int i = 0; i < numChild; ++i) {
+        root->showArrow[i] = 0;
         if (root->next[i])
         {
             makeArrow(&root->shape, &root->next[i]->shape, &root->arrow[i]);
             root->showArrow[i] = 1;
         }
+    }
+
+    std::cout<<"\nkey,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
+    if (root->next[0]) std::cout << root->next[0]->key<<' ';
+    if (root->next[1]) std::cout << root->next[1]->key<<' ';
+    std::cout<<'\n';
 
     root->reset();
+}
+
+sf::Vector2f getPositionNode(AVLNode *root, AVLNode *node, float start_x, float start_y, float distance_x, float distance_y)
+{
+    RecalTreeAmountLeftRight(root);
+    int direction = 1;
+    if (node->key < root->key)
+        direction = -1;
+    return sf::Vector2f(start_x + direction * distance_x * (node->amountLR[std::max(-direction, 0)] + 1 /* root */),
+                        start_y + distance_y * node->depthAVL);
 }

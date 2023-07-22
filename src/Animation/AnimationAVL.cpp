@@ -193,6 +193,7 @@ void AnimationAVL::moveNode(AVLNode *targetNode, float x1, float y1)
 
     float x0 = targetNode->x;
     float y0 = targetNode->y;
+
     
     if (reverse) {
         x0 = targetNode->array_pos[targetNode->idx_pos - 1].x;
@@ -200,6 +201,7 @@ void AnimationAVL::moveNode(AVLNode *targetNode, float x1, float y1)
     }
     float sx = x1 - x0;
     float sy = y1 - y0;
+    // std::cout<<"x0,y0,x1,y1,sx,sy="<<x0<<' '<<y0<<' '<<x1<<' '<<y1<<' '<<sx<<' '<<sy<<'\n';
 
     float x = x0 + sx / this->animationTime * this->dt;
     float y = y0 + sy / this->animationTime * this->dt;
@@ -208,7 +210,7 @@ void AnimationAVL::moveNode(AVLNode *targetNode, float x1, float y1)
 }
 
 
-void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance, std::vector<int> codeLines)
+void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, std::vector<int> codeLines)
 {       
     if (emptyList) {
         if (!this->startStep[stepChildIndex]) return;
@@ -220,23 +222,47 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
             codeHighlight->next_currentLines(codeLines);
         return;
     }
-
-    /* Change node label */
     
-    /* Move node to new position */
-    // for (AVLNode *cur = head; cur != tail->next; cur = cur->next)
-    // {
-    //     float x1 = start_x + cur->index * distance;
-    //     float y1 = start_y;
+    if (this->startStep[stepChildIndex]) {
+        this->startStep[stepChildIndex] = 0;
+        RecalTreeAmountLeftRight(root);
+    }
 
-    //     this->moveNode(cur, x1, y1);
-    //     if (cur != tail)
-    //     {
-    //         cur->next->index = cur->index + 1;
-    //     }
-    // }
+    std::queue<std::pair<AVLNode* , int>> Queue; // second is 1 or -1 represent right/left to the root
+    Queue.push({root, 0});
 
-    /* Show Arrow by makeArrow*/
+    while (!Queue.empty()) {
+        auto Pair = Queue.front();
+        auto curNode = Pair.first;
+        auto direction = Pair.second;
+        Queue.pop();
+
+        if (curNode == nullptr) continue;
+
+        curNode->labelString = "";
+        curNode->showNode = 1;
+        for (int i = 0; i < numChild; ++i) {
+            curNode->showArrow[i] = 0;
+            if (curNode->next[i])
+            {
+                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
+                curNode->showArrow[i] = 1;
+            }
+        }
+
+        if (direction == 0) {
+            Queue.push({curNode->next[0], -1});
+            Queue.push({curNode->next[1], 1});
+            moveNode(curNode, start_x, start_y);
+            
+            continue;
+        }
+
+        Queue.push({curNode->next[0], direction});
+        Queue.push({curNode->next[1], direction});
+        //1->0   -1->1
+        moveNode(curNode, start_x + direction * distance_x * (curNode->amountLR[std::max(-direction, 0)] + 1 /* root */), start_y + distance_y * curNode->depthAVL);
+    }
 }
 
 //Reset

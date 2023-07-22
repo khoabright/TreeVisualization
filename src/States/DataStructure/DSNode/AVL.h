@@ -14,8 +14,8 @@ private:
     int maxNode = 12;
     int numberNode = 0;
 
-    float nodeDistanceX = 100.f;
-    float nodeDistanceY = 100.f;
+    float nodeDistanceX = 50.f;
+    float nodeDistanceY = 70.f;
 
     AVLNode *root;
     AnimationAVL *animationAVL;
@@ -90,6 +90,7 @@ public:
     void updateInputFields();
     void updateSFMLEvents(const float &dt, sf::Event &event);
     void update(const float &dt);
+    
     void renderButtons(sf::RenderTarget *target = NULL);
     void renderNode(sf::RenderTarget *target);
     void renderAnimation();

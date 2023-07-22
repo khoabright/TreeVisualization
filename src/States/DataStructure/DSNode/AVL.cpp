@@ -257,7 +257,7 @@ void AVL::initAnimation()
     this->animation = new AnimationAVL(&this->Colors, (float)(maxSpeed * speedGap) / currentSpeed, codeHighlight);
     this->animationAVL = dynamic_cast<AnimationAVL *>(this->animation);
     assert(animationAVL != nullptr);
-    this->animationAVL->animationTime = speedGap * (float)maxSpeed;
+    this->animationAVL->animationTime = float(speedGap * maxSpeed) / currentSpeed;
 }
 
 void AVL::initHighlightCode()
@@ -462,6 +462,7 @@ AVLNode *AVL::newAVLNode(int key)
 AVLNode *AVL::rightRotate(AVLNode *y)
 {
     AVLNode *x = y->next[0];
+    std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = x->next[1];
     x->next[1] = y;
     y->next[0] = T2;
@@ -477,6 +478,7 @@ AVLNode *AVL::rightRotate(AVLNode *y)
 AVLNode *AVL::leftRotate(AVLNode *x)
 {
     AVLNode *y = x->next[1];
+    std::cout<<"leftRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = y->next[0];
     y->next[0] = x;
     x->next[1] = T2;
@@ -517,11 +519,15 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
 
     /* Make animation for connecting to new node */
     if (curNode->next[direction]->key == key)
-    {   
-        RecalTreeAmountLeftRight(root);
-        RecalTreePosition(root, start_x, start_y, nodeDistanceX, nodeDistanceY);
+    {
+        /* Set new node to proper position beforehand */
+        curNode->next[direction]->newPos(getPositionNode(root, curNode->next[direction], start_x, start_y, nodeDistanceX, nodeDistanceY));
+        curNode->next[direction]->nextPos();
+
         this->animationAVL->instructions.push_back(
             {[this, curNode, direction]()
+             { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); },
+             [this, curNode, direction]()
              { this->animationAVL->showNode(curNode->next[direction], "newNode", numberNode, {2, 4}); },
              [this, curNode, direction]()
              { this->animationAVL->connectNodes(curNode, curNode->next[direction], direction, {3}); }});
@@ -693,7 +699,18 @@ void AVL::operation_add(int nodeValue)
         return;
     }
 
-    insertAVLNode(this->root, nodeValue);
+    root = insertAVLNode(this->root, nodeValue);
+    root->depthAVL = 0;
+    std::cout<<"\nkeyRoot,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
+    if (root->next[0]) std::cout << root->next[0]->key<<' ';
+    if (root->next[1]) std::cout << root->next[1]->key<<' ';
+    std::cout<<'\n';
+
+    // this->animationAVL->instructions.push_back(
+    //     {
+    //         [this]()
+    //         { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); },
+    //     });
 }
 
 // Delete

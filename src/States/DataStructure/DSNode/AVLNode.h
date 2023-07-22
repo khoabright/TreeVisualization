@@ -14,11 +14,14 @@ struct AVLNode
     AVLNode *next[numChild];
 
     int key, heightAVL, depthAVL = 0; // depth compared to root
-    int amountLeft = 0, amountRight = 0; // amount of nodes visualized to the left/right (not include other side of root and root)
+    int amountLR[numChild] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
+    int subTreeSize = 0; // number of Node in its subtree (including itself)
     float scale_x, scale_y, x, y, width, height; // height of the node
     float standard_width = 40.f, standard_height = 40.f; /* Dimension I used in 800x600 and radius = 40 */
     float x_center, y_center;
-    float radius = 20.f;
+    float radius = 15.f;
+    float labelTextSize = 18.f; // text for label
+    float textSize = 13.f; // Text for key
 
     std::map<std::string, sf::Color> *Colors;
     std::vector<std::string> array_outlineColor;
@@ -94,8 +97,11 @@ struct AVLNode
 };
 
 void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
-int RecalTreeAmountLeftRight(AVLNode *root, bool direction = 1); // direction = 0/1 is calculating amountLeft/Right
-int RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, bool direction = 1);
+void RecalTreeAmountLeftRight(AVLNode *root, int direction = 1); // direction = -1/1 is calculating amountLeft/Right
+void RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction = 1); 
 void ResetTree(AVLNode *root);
+
+/* get position of node after correctly layout */
+sf::Vector2f getPositionNode(AVLNode *root, AVLNode *node, float start_x, float start_y, float distance_x, float distance_y);
 
 #endif

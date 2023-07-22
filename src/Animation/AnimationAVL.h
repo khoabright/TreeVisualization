@@ -35,7 +35,7 @@ public:
 
     void moveNode(AVLNode *targetNode, float x1, float y1);
 
-    void Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance, std::vector<int> codeLines);
+    void Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, std::vector<int> codeLines);
 
     //Reset
     void updateNodePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y);
