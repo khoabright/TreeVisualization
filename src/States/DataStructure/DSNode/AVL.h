@@ -17,7 +17,9 @@ private:
     float nodeDistanceX = 50.f;
     float nodeDistanceY = 70.f;
 
-    AVLNode *root;
+    AVLNode *root; // parent of real root, root->next[0] = real root
+    // std::vector<AVLNode *> stack_root;
+    
     AnimationAVL *animationAVL;
     std::vector<AVLNode *> Nodes;
 
@@ -91,12 +93,16 @@ public:
     void updateSFMLEvents(const float &dt, sf::Event &event);
     void update(const float &dt);
     
+    void enable_replayButton();
     void renderButtons(sf::RenderTarget *target = NULL);
     void renderNode(sf::RenderTarget *target);
     void renderAnimation();
     void renderHighlightCode(sf::RenderTarget *target);
     void render(sf::RenderTarget *target = NULL);
     void reset();
+
+    /// @brief Called right before ending a operation, to reset some variables
+    void endOperation();
 };
 
 #endif

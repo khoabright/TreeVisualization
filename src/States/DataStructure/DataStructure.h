@@ -151,6 +151,13 @@ public:
 
     //Code switch
     void button_CodeSwitch();
+
+
+    /// @brief Wait until animation done to process next step
+    void waitAnimation();
+
+    /// @brief Called right before ending a operation, to reset some variables
+    virtual void endOperation() = 0;
 };
 
 #endif

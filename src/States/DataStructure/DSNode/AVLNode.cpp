@@ -397,28 +397,29 @@ void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShap
     targetArrow->setRotation(alpha / pi * 180);
 }
 
-void RecalTreeAmountLeftRight(AVLNode *root, int direction)
+void RecalTreeAmountLeftRight(AVLNode *root, int direction, bool isRoot)
 {   
     if (root == nullptr) return;
+    if (isRoot) root->depthAVL = 0;
 
     if (root->next[0]) root->next[0]->depthAVL = root->depthAVL + 1;
     if (root->next[1]) root->next[1]->depthAVL = root->depthAVL + 1;
     
-    if (root->depthAVL == 0) {
+    if (isRoot) {
         if (root->next[0])
             root->next[0]->amountLR[0] = root->next[0]->amountLR[1] = 0;
         if (root->next[1])
             root->next[1]->amountLR[0] = root->next[1]->amountLR[1] = 0;
-        RecalTreeAmountLeftRight(root->next[0], 1);
-        RecalTreeAmountLeftRight(root->next[1], 0);
+        RecalTreeAmountLeftRight(root->next[0], 1, 0);
+        RecalTreeAmountLeftRight(root->next[1], 0, 0);
         return;
     }
     
     if (root->next[direction]) root->next[direction]->amountLR[direction] = root->amountLR[direction];
-    RecalTreeAmountLeftRight(root->next[direction], direction);
+    RecalTreeAmountLeftRight(root->next[direction], direction, 0);
     if (root->next[direction]) root->amountLR[direction] += root->next[direction]->subTreeSize;
     if (root->next[direction ^ 1]) root->next[direction ^ 1]->amountLR[direction] = root->amountLR[direction] + 1 /* itself */;
-    RecalTreeAmountLeftRight(root->next[direction ^ 1], direction);
+    RecalTreeAmountLeftRight(root->next[direction ^ 1], direction, 0);
 
     root->subTreeSize = 1;
     if (root->next[0]) root->subTreeSize += root->next[0]->subTreeSize;
@@ -492,3 +493,23 @@ void updateBalanceFactor(AVLNode *root)
     if (root == NULL) return;
     // root->balanceFactor = heightAVL(root->next[0]) - heightAVL(root->next[1]);
 }
+
+// //Root
+// void updateRoot(int idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root) {
+//     root = array_root[idx_root];
+// }
+// void newRoot(AVLNode* root, std::vector<AVLNode*>& array_root) {
+//     if (idx_root == (int)array_root.size() - 1) {
+//         array_root.push_back(root);
+//     }
+// }
+// void prevRoot(int &idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root) {
+//     this->idx_pos--;
+//     this->updateRoot(idx_root, root, array_root);
+// }
+// void nextRoot(int &idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root) {
+//     this->idx_pos++;
+//     this->updateRoot(idx_root, root, array_root);
+// }
+
+

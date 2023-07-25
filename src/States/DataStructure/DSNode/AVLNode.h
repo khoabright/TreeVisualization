@@ -100,12 +100,18 @@ struct AVLNode
 };
 
 void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
-void RecalTreeAmountLeftRight(AVLNode *root, int direction = 1); // direction = -1/1 is calculating amountLeft/Right
+void RecalTreeAmountLeftRight(AVLNode *root, int direction = 1, bool isRoot = 1); // direction = -1/1 is calculating amountLeft/Right
 void RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction = 1); 
 void ResetTree(AVLNode *root);
 
 /* get position of node after correctly layout */
 sf::Vector2f getPositionNode(AVLNode *root, AVLNode *node, float start_x, float start_y, float distance_x, float distance_y);
 // void updateBalanceFactor(AVLNode *root);
+
+// //Root
+// void updateRoot(int idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root);
+// void newRoot(AVLNode* root, std::vector<AVLNode*>& array_root);
+// void prevRoot(int &idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root);
+// void nextRoot(int &idx_root, AVLNode* &root, std::vector<AVLNode*>& array_root);
 
 #endif

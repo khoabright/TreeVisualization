@@ -26,6 +26,20 @@ void AnimationAVL::addCodeLines(std::vector<int> codeLines)
     else codeHighlight->next_currentLines(codeLines);
 }
 
+// void AnimationAVL::changeRoot(int &idx_root, std::vector<AVLNode *> array_root, AVLNode* new_root, AVLNode* root, std::vector<int> codeLines)
+// {
+//     if (!this->startStep[stepChildIndex]) return;
+//     this->startStep[stepChildIndex] = 0;
+
+//     if (this->reverse) {
+//         prevRoot();
+//         codeHighlight->prev_currentLines();
+//         return;
+//     }
+//     new(targetLabel);
+//     targetNode->nextLabel();
+//     codeHighlight->next_currentLines(codeLines);
+// }
 
 void AnimationAVL::showNode(AVLNode *targetNode, std::string targetLabel, int &numberNode, std::vector<int> codeLines) 
 {   
@@ -119,6 +133,9 @@ void AnimationAVL::changeNodeValue(AVLNode *targetNode, int newValue, std::vecto
 
 void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next_index, std::vector<int> codeLines)
 {   
+    /* Don't waste time to make arrow */
+    // this->dt = this->animationTime;
+
     if (this->reverse && this->doneStep)
     {   
         targetNode->prevNext(next_index);

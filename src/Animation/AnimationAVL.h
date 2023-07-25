@@ -22,6 +22,8 @@ public:
 
     void addCodeLines(std::vector<int> codeLines); //do nothing but adding codeLines
 
+    // void changeRoot(int &idx_root, std::vector<AVLNode *> array_root, AVLNode* new_root, AVLNode* root, std::vector<int> codeLines);
+
     void showNode(AVLNode *targetNode, std::string targetLabel, int &numberNode, std::vector<int> codeLines);
     void hideNode(AVLNode *targetNode, int &numberNode, std::vector<int> codeLines);
     

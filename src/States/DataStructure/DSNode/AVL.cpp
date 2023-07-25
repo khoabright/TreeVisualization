@@ -3,7 +3,7 @@
 AVL::AVL(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State *> *states)
     : DataStructure(window, supportedKeys, states)
 {
-    this->root = nullptr;
+    this->root = new AVLNode(0, 0, scale_x, scale_y, 100000, &font, &Colors);
     this->exist.resize(105);
 
     auto AVLScale = [&]()
@@ -404,9 +404,6 @@ void AVL::button_add()
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
 
-        this->prepareNewInstruction();
-        this->button_play();
-
         /* Use thread because the animation should run parallel to Rendering*/
         // this->thread_operation = new sf::Thread(&operation_add, std::ref(this->valueFirst));
         this->thread_operation = new sf::Thread([this]() { operation_add(this->valueFirst); });
@@ -462,8 +459,8 @@ int AVL::heightAVL(AVLNode *node)
 AVLNode *AVL::newAVLNode(int key)
 {   
     int posX = start_x, posY = start_y;
-    std::string newLabel = "newNode";
-    if (numberNode > 0) {posX -= 3 * nodeDistanceX; newLabel = "root";}
+    std::string newLabel = "root";
+    if (numberNode > 0) {posX -= 3 * nodeDistanceX; newLabel = "newNode";}
 
     AVLNode *newNode = new AVLNode(posX, posY, scale_x, scale_y, key, &font, &Colors);
     newNode->key = key;
@@ -471,22 +468,26 @@ AVLNode *AVL::newAVLNode(int key)
     this->Nodes.push_back(newNode);
     this->animationAVL->instructions.push_back({[this, newNode, newLabel]()
                                                 { this->animationAVL->showNode(newNode, newLabel, this->numberNode, {1}); }});
+    waitAnimation();
+
     return (newNode);
 }
 
 AVLNode *AVL::rightRotate(AVLNode *y)
 {
     AVLNode *x = y->next[0];
-    // std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
+    std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = x->next[1];
 
     // x->next[1] = y;
     this->animationAVL->instructions.push_back({[this, x, y]()
                                                 { this->animationAVL->connectNodes(x, y, 1, {1}); }});
+    waitAnimation();
 
     // y->next[0] = T2;
     this->animationAVL->instructions.push_back({[this, y, T2]()
                                                 { this->animationAVL->connectNodes(y, T2, 0, {1}); }});
+    waitAnimation();
 
     y->heightAVL = std::max(heightAVL(y->next[0]),
                          heightAVL(y->next[1])) +
@@ -494,6 +495,7 @@ AVLNode *AVL::rightRotate(AVLNode *y)
     x->heightAVL = std::max(heightAVL(x->next[0]),
                          heightAVL(x->next[1])) +
                 1;
+
     return x;
 }
 
@@ -506,10 +508,12 @@ AVLNode *AVL::leftRotate(AVLNode *x)
     // y->next[0] = x;
     this->animationAVL->instructions.push_back({[this, y, x]()
                                                 { this->animationAVL->connectNodes(y, x, 0, {1}); }});
+    waitAnimation();
 
     // x->next[1] = T2;
     this->animationAVL->instructions.push_back({[this, x, T2]()
                                                 { this->animationAVL->connectNodes(x, T2, 1, {1}); }});
+    waitAnimation();
 
     x->heightAVL = std::max(heightAVL(x->next[0]),
                          heightAVL(x->next[1])) +
@@ -517,6 +521,7 @@ AVLNode *AVL::leftRotate(AVLNode *x)
     y->heightAVL = std::max(heightAVL(y->next[0]),
                          heightAVL(y->next[1])) +
                 1;
+
     return y;
 }
 
@@ -536,10 +541,16 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
     }
 
     /* Move down to its subtree and connect */
-    int direction = (key > curNode -> key);
+    int direction = (key > curNode->key);
+    // curNode->next[direction] = insertAVLNode(curNode->next[direction], key);
     auto *temp = insertAVLNode(curNode->next[direction], key);
     this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
                                                 { this->animationAVL->connectNodes(curNode, temp, direction, {5}); }});
+    waitAnimation();
+
+    this->animationAVL->instructions.push_back({[this]()
+                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+    waitAnimation();
 
 
     // Update the balance factor of each curNode and
@@ -547,26 +558,14 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
 
     /* Call animation for update balance factor, then call balancing animation */
     /* If no need balancing => relayout, else simultaneously rotate (only make arrow) and relayout */
-    this->animationAVL->instructions.push_back({[this]()
-                                                { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
 
-    int balanceFactor = 0;
+    if (curNode == root) return nullptr;
+    // Update the balance factor of curNode and
+    // balance the tree
+    curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
+                                   heightAVL(curNode->next[1]));
 
-    // std::cout<<"CurNode,dir="<<curNode->key<<' '<<direction<<'\n';
-    if (curNode->next[direction] == nullptr) {
-        // std::cout<<"===key\n";
-        curNode->heightAVL = 1 + std::max(1, heightAVL(curNode->next[direction ^ 1]));
-        if (direction == 0) balanceFactor = 1 - heightAVL(curNode->next[1]);
-        else balanceFactor = heightAVL(curNode->next[0]) - 1;
-    }
-    else {
-        // std::cout<<"Not key\n";
-        curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]), heightAVL(curNode->next[1]));
-        balanceFactor = getBalanceFactor(curNode);
-    }
-        // std::cout<<"height, bal="<<curNode->heightAVL<<' '<<curNode->balanceFactor<<'\n';
-
-    
+    int balanceFactor = getBalanceFactor(curNode);
     if (balanceFactor > 1)
     {
         if (key < curNode->next[0]->key)
@@ -674,9 +673,8 @@ AVLNode *AVL::deleteAVLNode(AVLNode *root, int key)
 
 void AVL::operation_add(int nodeValue)
 {
-    /* Complete all animations */
-    std::cout<<"operation_add\n";
-    // sf::sleep(sf::milliseconds(1000));
+    this->prepareNewInstruction();
+    this->button_play();
 
     auto preCheck = [&]()
     {
@@ -722,29 +720,19 @@ void AVL::operation_add(int nodeValue)
     };
     addHighlightCodes();
 
-    if (root == nullptr) {
-        root = newAVLNode(nodeValue);
+    insertAVLNode(this->root, nodeValue);
 
-        std::cout<<"doneOperationAdd\n";
-        doneOperation = 1;
-        return;
-    }
-
-    root = insertAVLNode(this->root, nodeValue);
-    root->depthAVL = 0;
     // std::cout<<"\nkeyRoot,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
     // if (root->next[0]) std::cout << root->next[0]->key<<' ';
     // if (root->next[1]) std::cout << root->next[1]->key<<' ';
     // std::cout<<'\n';
 
-    this->animationAVL->instructions.push_back(
-        {
-            [this]()
-            { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); },
-        });
+    // this->animationAVL->instructions.push_back(
+    //     {[this]()
+    //      { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); }});
+    // waitAnimation();
 
-    std::cout<<"doneOperationAdd\n";
-    doneOperation = 1;
+    endOperation();
     return;
 }
 
@@ -761,7 +749,8 @@ void AVL::prepareNewInstruction()
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
-    this->animationAVL->newInstruction(this->root, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+    this->animationAVL->newInstruction(this->root->next[0], this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+    this->animationAVL->animationTime = 0;
     this->codeHighlight->reset();
 }
 
@@ -938,6 +927,14 @@ void AVL::update(const float &dt)
         this->triggerFunction[this->choosingButton]();
 }
 
+void AVL::enable_replayButton()
+{
+    /* Show Replay button */
+    this->buttons["Play"]->disabled = 1;
+    this->buttons["Pause"]->disabled = 1;
+    this->buttons["Replay"]->disabled = 0;
+}
+
 void AVL::renderButtons(sf::RenderTarget *target)
 {
     /* Render parent buttons */
@@ -983,21 +980,20 @@ void AVL::renderAnimation()
         return;
     }
 
-    auto enable_replayButton = [&]()
-    {
-        /* Show Replay button */
-        this->buttons["Play"]->disabled = 1;
-        this->buttons["Pause"]->disabled = 1;
-        this->buttons["Replay"]->disabled = 0;
-    };
+    // auto enable_replayButton = [&]()
+    // {
+    //     /* Show Replay button */
+    //     this->buttons["Play"]->disabled = 1;
+    //     this->buttons["Pause"]->disabled = 1;
+    //     this->buttons["Replay"]->disabled = 0;
+    // };
 
     if (this->runState == "play")
     {
-        doneAnimation = 0;
         this->animationAVL->play(this->doneAnimation, &this->stepText);
-        if (doneAnimation && doneOperation)
+        if (doneOperation && doneAnimation)
         {
-            // std::cout<<"Done both\n";
+            std::cout<<"Done both\n";
             this->runState = "";
             enable_replayButton();
         }
@@ -1090,4 +1086,15 @@ void AVL::reset()
     inputGuide.setString("");
     exist.assign((int)exist.size(), 0);
     runState = "";
+}
+
+void AVL::endOperation()
+{
+    std::cout<<"doneOperation\n";
+    doneOperation = 1;
+    this->animationAVL->animationTime = float(speedGap * maxSpeed) / currentSpeed;
+
+    // At the beginning of each operator, we go through all animation immediately, then trigger replay mode
+    button_replay();
+    return;
 }
