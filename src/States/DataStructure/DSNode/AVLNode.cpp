@@ -486,3 +486,9 @@ sf::Vector2f getPositionNode(AVLNode *root, AVLNode *node, float start_x, float 
     return sf::Vector2f(start_x + direction * distance_x * (node->amountLR[std::max(-direction, 0)] + 1 /* root */),
                         start_y + distance_y * node->depthAVL);
 }
+
+void updateBalanceFactor(AVLNode *root)
+{
+    if (root == NULL) return;
+    // root->balanceFactor = heightAVL(root->next[0]) - heightAVL(root->next[1]);
+}

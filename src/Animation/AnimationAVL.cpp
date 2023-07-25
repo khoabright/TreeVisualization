@@ -151,6 +151,12 @@ void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next
         targetNode->showArrow[next_index] = 0;
     }
 
+    /* If new node is last node, dont animate arrow */
+    int curIdx = targetNode->idx_next[next_index]; 
+    if (targetNode->array_next[next_index][curIdx] == targetNode->array_next[next_index][curIdx - 1]) {
+        return;
+    }
+
     float scale = 1.f / this->animationTime * this->dt;
     targetNode->arrow[next_index].setScale(sf::Vector2f(scale, 1));
 }
@@ -239,14 +245,14 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
 
         if (curNode == nullptr) continue;
 
-        curNode->labelString = "";
-        curNode->showNode = 1;
+        // curNode->labelString = "";
+        // curNode->showNode = 1;
         for (int i = 0; i < numChild; ++i) {
-            curNode->showArrow[i] = 0;
+            // curNode->showArrow[i] = 0;
             if (curNode->next[i])
             {
                 makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
-                curNode->showArrow[i] = 1;
+                // curNode->showArrow[i] = 1;
             }
         }
 

@@ -451,21 +451,34 @@ int AVL::heightAVL(AVLNode *node)
 }
 
 AVLNode *AVL::newAVLNode(int key)
-{
-    AVLNode *newNode = new AVLNode(start_x, start_y, scale_x, scale_y, key, &font, &Colors);
+{   
+    int posX = start_x, posY = start_y;
+    std::string newLabel = "newNode";
+    if (numberNode > 0) {posX -= 3 * nodeDistanceX; newLabel = "root";}
+
+    AVLNode *newNode = new AVLNode(posX, posY, scale_x, scale_y, key, &font, &Colors);
     newNode->key = key;
     newNode->heightAVL = 1;
     this->Nodes.push_back(newNode);
+    this->animationAVL->instructions.push_back({[this, newNode, newLabel]()
+                                                { this->animationAVL->showNode(newNode, newLabel, this->numberNode, {1}); }});
     return (newNode);
 }
 
 AVLNode *AVL::rightRotate(AVLNode *y)
 {
     AVLNode *x = y->next[0];
-    std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
+    // std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = x->next[1];
-    x->next[1] = y;
-    y->next[0] = T2;
+
+    // x->next[1] = y;
+    this->animationAVL->instructions.push_back({[this, x, y]()
+                                                { this->animationAVL->connectNodes(x, y, 1, {1}); }});
+
+    // y->next[0] = T2;
+    this->animationAVL->instructions.push_back({[this, y, T2]()
+                                                { this->animationAVL->connectNodes(y, T2, 0, {1}); }});
+
     y->heightAVL = std::max(heightAVL(y->next[0]),
                          heightAVL(y->next[1])) +
                 1;
@@ -480,8 +493,15 @@ AVLNode *AVL::leftRotate(AVLNode *x)
     AVLNode *y = x->next[1];
     std::cout<<"leftRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = y->next[0];
-    y->next[0] = x;
-    x->next[1] = T2;
+
+    // y->next[0] = x;
+    this->animationAVL->instructions.push_back({[this, y, x]()
+                                                { this->animationAVL->connectNodes(y, x, 0, {1}); }});
+
+    // x->next[1] = T2;
+    this->animationAVL->instructions.push_back({[this, x, T2]()
+                                                { this->animationAVL->connectNodes(x, T2, 1, {1}); }});
+
     x->heightAVL = std::max(heightAVL(x->next[0]),
                          heightAVL(x->next[1])) +
                 1;
@@ -506,38 +526,38 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
         return (newAVLNode(key));
     }
 
-    int direction = 1;
-    if (key < curNode->key)
-    {   
-        direction = 0;
-        curNode->next[0] = insertAVLNode(curNode->next[0], key);
-    }
-    else if (key > curNode->key)
-        curNode->next[1] = insertAVLNode(curNode->next[1], key);
-    else
-        return curNode;
+    /* Move down to its subtree and connect */
+    int direction = (key > curNode -> key);
+    auto *temp = insertAVLNode(curNode->next[direction], key);
+    this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
+                                                { this->animationAVL->connectNodes(curNode, temp, direction, {5}); }});
 
-    /* Make animation for connecting to new node */
-    if (curNode->next[direction]->key == key)
-    {
-        /* Set new node to proper position beforehand */
-        curNode->next[direction]->newPos(getPositionNode(root, curNode->next[direction], start_x, start_y, nodeDistanceX, nodeDistanceY));
-        curNode->next[direction]->nextPos();
-
-        this->animationAVL->instructions.push_back(
-            {[this, curNode, direction]()
-             { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); },
-             [this, curNode, direction]()
-             { this->animationAVL->showNode(curNode->next[direction], "newNode", numberNode, {2, 4}); },
-             [this, curNode, direction]()
-             { this->animationAVL->connectNodes(curNode, curNode->next[direction], direction, {3}); }});
-    }
 
     // Update the balance factor of each curNode and
     // balance the tree
-    curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
-                                   heightAVL(curNode->next[1]));
-    int balanceFactor = getBalanceFactor(curNode);
+
+    /* Call animation for update balance factor, then call balancing animation */
+    /* If no need balancing => relayout, else simultaneously rotate (only make arrow) and relayout */
+    this->animationAVL->instructions.push_back({[this]()
+                                                { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+
+    int balanceFactor = 0;
+
+    std::cout<<"CurNode,dir="<<curNode->key<<' '<<direction<<'\n';
+    if (curNode->next[direction] == nullptr) {
+        std::cout<<"===key\n";
+        curNode->heightAVL = 1 + std::max(1, heightAVL(curNode->next[direction ^ 1]));
+        if (direction == 0) balanceFactor = 1 - heightAVL(curNode->next[1]);
+        else balanceFactor = heightAVL(curNode->next[0]) - 1;
+    }
+    else {
+        std::cout<<"Not key\n";
+        curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]), heightAVL(curNode->next[1]));
+        balanceFactor = getBalanceFactor(curNode);
+    }
+        std::cout<<"height, bal="<<curNode->heightAVL<<' '<<curNode->balanceFactor<<'\n';
+
+    
     if (balanceFactor > 1)
     {
         if (key < curNode->next[0]->key)
@@ -694,8 +714,6 @@ void AVL::operation_add(int nodeValue)
 
     if (root == nullptr) {
         root = newAVLNode(nodeValue);
-        this->animationAVL->instructions.push_back({[this]()
-                                                 { this->animationAVL->showNode(root, "root", numberNode, {0}); }});
         return;
     }
 
@@ -706,11 +724,11 @@ void AVL::operation_add(int nodeValue)
     if (root->next[1]) std::cout << root->next[1]->key<<' ';
     std::cout<<'\n';
 
-    // this->animationAVL->instructions.push_back(
-    //     {
-    //         [this]()
-    //         { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); },
-    //     });
+    this->animationAVL->instructions.push_back(
+        {
+            [this]()
+            { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); },
+        });
 }
 
 // Delete

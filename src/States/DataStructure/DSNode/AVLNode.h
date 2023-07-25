@@ -16,6 +16,8 @@ struct AVLNode
     int key, heightAVL, depthAVL = 0; // depth compared to root
     int amountLR[numChild] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
     int subTreeSize = 0; // number of Node in its subtree (including itself)
+    int balanceFactor = 0;
+
     float scale_x, scale_y, x, y, width, height; // height of the node
     float standard_width = 40.f, standard_height = 40.f; /* Dimension I used in 800x600 and radius = 40 */
     float x_center, y_center;
@@ -103,5 +105,6 @@ void ResetTree(AVLNode *root);
 
 /* get position of node after correctly layout */
 sf::Vector2f getPositionNode(AVLNode *root, AVLNode *node, float start_x, float start_y, float distance_x, float distance_y);
+// void updateBalanceFactor(AVLNode *root);
 
 #endif
