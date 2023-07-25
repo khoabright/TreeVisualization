@@ -36,6 +36,8 @@ public:
     sf::Texture backgroundTexture;
     sf::Texture skyTexture;
     sf::Texture desertTexture;
+
+    sf::Thread *thread_operation = nullptr;
     
     // Functions:
 

@@ -11,7 +11,7 @@ class AVL : public DataStructure
 private:
     // Variables
     float start_x = 580, start_y = 110;
-    int maxNode = 12;
+    int maxNode = 100;
     int numberNode = 0;
 
     float nodeDistanceX = 50.f;

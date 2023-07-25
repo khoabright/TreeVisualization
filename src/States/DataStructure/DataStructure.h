@@ -87,7 +87,7 @@ protected:
 
     int valueFirst = 0, valueSecond = 0;  /* value seperated by comma in inputField */
     bool newStepTriggered = 0;
-    bool doneAnimation = 1;
+    bool doneAnimation = 1, doneOperation = 1;
     std::string runState = "";
 
     // Functions
@@ -117,6 +117,7 @@ public:
     DataStructure(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State*>* states);
     virtual ~DataStructure();
 
+    sf::Thread *thread_operation = nullptr;
     // Functions
 
     //Update

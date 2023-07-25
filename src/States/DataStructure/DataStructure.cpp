@@ -531,6 +531,7 @@ void DataStructure::button_play()
     this->newStepTriggered = 0;
     this->animation->finishStep();
     this->doneAnimation = 0;
+    this->doneOperation = 0;
 
     this->buttons["Play"]->disabled = 1;
     this->buttons["Replay"]->disabled = 1;

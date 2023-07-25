@@ -469,10 +469,10 @@ void ResetTree(AVLNode *root)
         }
     }
 
-    std::cout<<"\nkey,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
-    if (root->next[0]) std::cout << root->next[0]->key<<' ';
-    if (root->next[1]) std::cout << root->next[1]->key<<' ';
-    std::cout<<'\n';
+    // std::cout<<"\nkey,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
+    // if (root->next[0]) std::cout << root->next[0]->key<<' ';
+    // if (root->next[1]) std::cout << root->next[1]->key<<' ';
+    // std::cout<<'\n';
 
     root->reset();
 }

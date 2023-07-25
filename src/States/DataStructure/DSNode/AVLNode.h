@@ -6,6 +6,7 @@
 #include "SFML/Graphics.hpp"
 
 #include <bits/stdc++.h>
+#include <functional>
 
 const int numChild = 2;
 

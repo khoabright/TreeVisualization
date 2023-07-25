@@ -396,14 +396,23 @@ void AVL::button_initialize()
 }
 
 void AVL::button_add()
-{
+{   
     this->choosingChildButton = "1Head";
 
     if (this->newStepTriggered)
-    {
+    {   
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
-        this->operation_add(this->valueFirst);
+
+        this->prepareNewInstruction();
+        this->button_play();
+
+        /* Use thread because the animation should run parallel to Rendering*/
+        // this->thread_operation = new sf::Thread(&operation_add, std::ref(this->valueFirst));
+        this->thread_operation = new sf::Thread([this]() { operation_add(this->valueFirst); });
+        this->thread_operation->launch();
+        // this->operation_add(this->valueFirst);
+
         return;
     }
     else
@@ -543,19 +552,19 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, int key)
 
     int balanceFactor = 0;
 
-    std::cout<<"CurNode,dir="<<curNode->key<<' '<<direction<<'\n';
+    // std::cout<<"CurNode,dir="<<curNode->key<<' '<<direction<<'\n';
     if (curNode->next[direction] == nullptr) {
-        std::cout<<"===key\n";
+        // std::cout<<"===key\n";
         curNode->heightAVL = 1 + std::max(1, heightAVL(curNode->next[direction ^ 1]));
         if (direction == 0) balanceFactor = 1 - heightAVL(curNode->next[1]);
         else balanceFactor = heightAVL(curNode->next[0]) - 1;
     }
     else {
-        std::cout<<"Not key\n";
+        // std::cout<<"Not key\n";
         curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]), heightAVL(curNode->next[1]));
         balanceFactor = getBalanceFactor(curNode);
     }
-        std::cout<<"height, bal="<<curNode->heightAVL<<' '<<curNode->balanceFactor<<'\n';
+        // std::cout<<"height, bal="<<curNode->heightAVL<<' '<<curNode->balanceFactor<<'\n';
 
     
     if (balanceFactor > 1)
@@ -666,35 +675,36 @@ AVLNode *AVL::deleteAVLNode(AVLNode *root, int key)
 void AVL::operation_add(int nodeValue)
 {
     /* Complete all animations */
-    this->prepareNewInstruction();
-    this->button_play();
+    std::cout<<"operation_add\n";
+    // sf::sleep(sf::milliseconds(1000));
 
     auto preCheck = [&]()
     {
         if (nodeValue == -1)
         {
             this->inputWarning.setString("Wrong input format");
-            return;
+            return false;
         }
         if (nodeValue < 1 || nodeValue > 99)
         {
             this->inputWarning.setString("Value should be in range [1..99]");
-            return;
+            return false;
         }
 
         if (numberNode + 1 > maxNode)
         {
             this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
-            return;
+            return false;
         }
 
         if (this->exist[nodeValue])
         {
             this->inputWarning.setString("No duplicate vertex allowed!");
-            return;
+            return false;
         }
+        return true;
     };
-    preCheck();
+    if (!preCheck()) {doneOperation = 1; return;}
     this->exist[nodeValue] = 1;
 
     auto addHighlightCodes = [&]
@@ -714,21 +724,28 @@ void AVL::operation_add(int nodeValue)
 
     if (root == nullptr) {
         root = newAVLNode(nodeValue);
+
+        std::cout<<"doneOperationAdd\n";
+        doneOperation = 1;
         return;
     }
 
     root = insertAVLNode(this->root, nodeValue);
     root->depthAVL = 0;
-    std::cout<<"\nkeyRoot,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
-    if (root->next[0]) std::cout << root->next[0]->key<<' ';
-    if (root->next[1]) std::cout << root->next[1]->key<<' ';
-    std::cout<<'\n';
+    // std::cout<<"\nkeyRoot,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
+    // if (root->next[0]) std::cout << root->next[0]->key<<' ';
+    // if (root->next[1]) std::cout << root->next[1]->key<<' ';
+    // std::cout<<'\n';
 
     this->animationAVL->instructions.push_back(
         {
             [this]()
             { this->animationAVL->Relayout((numberNode == 0), root, start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); },
         });
+
+    std::cout<<"doneOperationAdd\n";
+    doneOperation = 1;
+    return;
 }
 
 // Delete
@@ -740,6 +757,7 @@ void AVL::deleteMiddle(int index)
 
 void AVL::prepareNewInstruction()
 {
+    std::cout<<"Prepare new\n";
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
@@ -958,10 +976,10 @@ void AVL::renderNode(sf::RenderTarget *target)
 }
 
 void AVL::renderAnimation()
-{
-    if (this->doneAnimation)
+{   
+    // std::cout<<"runState="<<runState<<'\n';
+    if (this->runState == "")
     {
-        this->runState = "";
         return;
     }
 
@@ -975,9 +993,12 @@ void AVL::renderAnimation()
 
     if (this->runState == "play")
     {
+        doneAnimation = 0;
         this->animationAVL->play(this->doneAnimation, &this->stepText);
-        if (this->doneAnimation)
+        if (doneAnimation && doneOperation)
         {
+            // std::cout<<"Done both\n";
+            this->runState = "";
             enable_replayButton();
         }
         return;
@@ -990,14 +1011,18 @@ void AVL::renderAnimation()
     }
 
     if (this->runState == "prev")
-    {
+    {   
+        doneAnimation = 0;
         this->animationAVL->prev(this->doneAnimation, &this->stepText);
+        if (this->doneAnimation) runState = "";
         return;
     }
 
     if (this->runState == "next")
     {
+        doneAnimation = 0;
         this->animationAVL->next(this->doneAnimation, &this->stepText);
+        if (this->doneAnimation) runState = "";
         if (this->doneAnimation && this->animationAVL->curIndex == (int)this->animationAVL->instructions.size())
         {
             enable_replayButton();
