@@ -50,7 +50,7 @@ struct AVLNode
 
     //Label
     std::string labelString;
-    sf::Text labelText;
+    sf::Text labelText; // label for heightAVL
     sf::Color labelColor; // Yellow orange
 
     bool showNode = 0;

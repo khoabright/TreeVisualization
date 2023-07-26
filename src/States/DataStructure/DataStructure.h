@@ -117,7 +117,7 @@ public:
     DataStructure(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State*>* states);
     virtual ~DataStructure();
 
-    sf::Thread *thread_operation = nullptr;
+    // sf::Thread *thread_operation = nullptr;
     // Functions
 
     //Update
@@ -154,7 +154,7 @@ public:
 
 
     /// @brief Wait until animation done to process next step
-    void waitAnimation();
+    virtual void waitAnimation() = 0;
 
     /// @brief Called right before ending a operation, to reset some variables
     virtual void endOperation() = 0;

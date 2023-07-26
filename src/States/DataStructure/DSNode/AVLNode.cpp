@@ -187,9 +187,16 @@ void AVLNode::newColor(std::string fillColor, std::string outlineColor)
 }
 
 void AVLNode::updateColor()
-{
-    this->shape.setFillColor(Colors->at(array_fillColor[idx_fillColor]));
-    this->shape.setOutlineColor(Colors->at(array_outlineColor[idx_outlineColor]));
+{   
+    if (array_fillColor[idx_fillColor] == "normal") {
+        this->shape.setFillColor(Colors->at("normalFillColor"));
+        this->shape.setOutlineColor(Colors->at("normalOutlineColor"));    
+    }
+    else {
+        this->shape.setFillColor(Colors->at(array_fillColor[idx_fillColor]));
+        this->shape.setOutlineColor(Colors->at(array_outlineColor[idx_outlineColor]));
+    }
+
     this->labelColor = Colors->at("labelColor");
     this->text.setFillColor(Colors->at("characterColor"));
     this->labelText.setFillColor(labelColor);
@@ -458,7 +465,7 @@ void ResetTree(AVLNode *root)
     ResetTree(root->next[0]);
     ResetTree(root->next[1]);
 
-    root->labelString = "";
+    // root->labelString = "";
     root->showNode = 1;
 
     for (int i = 0; i < numChild; ++i) {

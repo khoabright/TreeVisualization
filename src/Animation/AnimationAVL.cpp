@@ -78,27 +78,27 @@ void AnimationAVL::hideNode(AVLNode *targetNode, int &numberNode, std::vector<in
     /* hide Node => hide Arrow also */
     /* For deleted Node only */
 
-    // if (this->reverse && this->doneStep) {
-    //     ++numberNode;
-    //     if (targetNode->next != nullptr) targetNode->showArrow[next_index] = 1;
-    //     codeHighlight->prev_currentLines();
-    // }
-    // if (!this->reverse && this->startStep[stepChildIndex]) {
-    //     --numberNode;
-    //     targetNode->showArrow[next_index] = 0;
-    //     codeHighlight->next_currentLines(codeLines);
-    // }
-    // if (this->startStep[stepChildIndex]) startStep[stepChildIndex] = 0;
-    // targetNode->showNode = 1;
+    if (this->reverse && this->doneStep) {
+        ++numberNode;
+        if (targetNode->next != nullptr) targetNode->showArrow[next_index] = 1;
+        codeHighlight->prev_currentLines();
+    }
+    if (!this->reverse && this->startStep[stepChildIndex]) {
+        --numberNode;
+        targetNode->showArrow[next_index] = 0;
+        codeHighlight->next_currentLines(codeLines);
+    }
+    if (this->startStep[stepChildIndex]) startStep[stepChildIndex] = 0;
+    targetNode->showNode = 1;
 
-    // float scale = 1.f - 1.f / this->animationTime * this->dt;
-    // targetNode->shape.setScale(sf::Vector2f(scale, scale));
-    // targetNode->text.setScale(sf::Vector2f(scale, scale));
-    // targetNode->labelText.setScale(sf::Vector2f(scale, scale));
+    float scale = 1.f - 1.f / this->animationTime * this->dt;
+    targetNode->shape.setScale(sf::Vector2f(scale, scale));
+    targetNode->text.setScale(sf::Vector2f(scale, scale));
+    targetNode->labelText.setScale(sf::Vector2f(scale, scale));
 
-    // targetNode->shape.setPosition(targetNode->x_center - targetNode->radius * scale,
-    //                               targetNode->y_center - targetNode->radius * scale);
-    // targetNode->updateText();
+    targetNode->shape.setPosition(targetNode->x_center - targetNode->radius * scale,
+                                  targetNode->y_center - targetNode->radius * scale);
+    targetNode->updateText();
 }
 
 void AnimationAVL::changeNodeLabel(AVLNode *targetNode, std::string targetLabel, std::vector<int> codeLines)
@@ -178,24 +178,21 @@ void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next
     targetNode->arrow[next_index].setScale(sf::Vector2f(scale, 1));
 }
 
-void AnimationAVL::highlightCurrentNode(AVLNode *targetNode, std::string targetLabel, std::string targetColor, std::vector<int> codeLines)
+void AnimationAVL::highlightCurrentNode(AVLNode *targetNode, std::string targetColor, std::vector<int> codeLines)
 {   
     if (!this->startStep[stepChildIndex]) return;
     this->startStep[stepChildIndex] = 0;
 
     if (this->reverse) {
         targetNode->prevColor();
-        targetNode->prevLabel();
         codeHighlight->prev_currentLines();
         return;
     }
     codeHighlight->next_currentLines(codeLines);
 
     targetNode->newColor(targetColor, targetColor);
-    targetNode->newLabel(targetLabel);
 
     targetNode->nextColor();
-    targetNode->nextLabel();
 }
 
 void AnimationAVL::moveNode(AVLNode *targetNode, float x1, float y1)
@@ -262,17 +259,6 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
 
         if (curNode == nullptr) continue;
 
-        // curNode->labelString = "";
-        // curNode->showNode = 1;
-        for (int i = 0; i < numChild; ++i) {
-            // curNode->showArrow[i] = 0;
-            if (curNode->next[i])
-            {
-                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
-                // curNode->showArrow[i] = 1;
-            }
-        }
-
         if (direction == 0) {
             Queue.push({curNode->next[0], -1});
             Queue.push({curNode->next[1], 1});
@@ -285,6 +271,29 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
         Queue.push({curNode->next[1], direction});
         //1->0   -1->1
         moveNode(curNode, start_x + direction * distance_x * (curNode->amountLR[std::max(-direction, 0)] + 1 /* root */), start_y + distance_y * curNode->depthAVL);
+    }
+
+    /* Update position of arrows */
+    std::queue<AVLNode*> q; // node only
+    q.push(root);
+
+    while (!q.empty()) {
+        auto curNode = q.front();
+        q.pop();
+
+        if (curNode == nullptr) continue;
+
+        for (int i = 0; i < numChild; ++i) {
+            // curNode->showArrow[i] = 0;
+            if (curNode->next[i])
+            {
+                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
+                curNode->showArrow[i] = 1;
+            }
+        }
+
+        q.push(curNode->next[0]);
+        q.push(curNode->next[1]);
     }
 }
 

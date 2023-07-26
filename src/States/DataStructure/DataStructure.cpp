@@ -628,12 +628,3 @@ void DataStructure::button_CodeSwitch()
     return;
 }
 
-void DataStructure::waitAnimation()
-{   
-    /* This function is called immediately after pushing new Animation */
-    this->doneAnimation = 0; 
-    while (!this->doneAnimation) {
-        // std::cout<<"Waiting\n";
-    }
-    return;
-}

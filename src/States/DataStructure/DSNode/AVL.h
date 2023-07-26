@@ -60,19 +60,19 @@ private:
     
     // AVL operations
     int heightAVL(AVLNode *N);
-    AVLNode *newAVLNode(int key);
+    AVLNode *newAVLNode(int key, AVLNode *parentNode);
     AVLNode *rightRotate(AVLNode *y);
     AVLNode *leftRotate(AVLNode *x);
     int getBalanceFactor(AVLNode *N);
-    AVLNode *insertAVLNode(AVLNode *AVLNode, int key);
+    AVLNode *insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key);
     AVLNode *AVLNodeWithMimumValue(AVLNode *AVLNode);
-    AVLNode *deleteAVLNode(AVLNode *root, int key);
+    AVLNode *deleteAVLNode(AVLNode *root, AVLNode *parentNode, int key);
 
     // Add
     void operation_add(int nodeValue);
 
     // Delete
-    void deleteMiddle(int index);
+    void operation_delete(int nodeValue);
 
     void prepareNewInstruction();
 
@@ -100,6 +100,9 @@ public:
     void renderHighlightCode(sf::RenderTarget *target);
     void render(sf::RenderTarget *target = NULL);
     void reset();
+
+    /// @brief Wait until animation done to process next step
+    void waitAnimation();
 
     /// @brief Called right before ending a operation, to reset some variables
     void endOperation();
