@@ -3,9 +3,6 @@
 AVL::AVL(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, std::stack<State *> *states)
     : DataStructure(window, supportedKeys, states)
 {
-    this->root = new AVLNode(0, 0, scale_x, scale_y, 100000, &font, &Colors);
-    this->exist.resize(1005);
-
     auto AVLScale = [&]()
     {
         nodeDistanceX *= scale_x;
@@ -41,6 +38,8 @@ AVL::AVL(sf::RenderWindow *window, std::map<std::string, int> *supportedKeys, st
     this->initChildButtons();
     this->initInputFields();
     this->initAnimation();
+
+    reset();
 }
 
 AVL::~AVL()
@@ -317,7 +316,7 @@ void AVL::button_initialize()
 
     if (this->choosingChildButton == "2Random")
     {
-        /* if (this->newStepTriggered)
+        if (this->newStepTriggered)
         {
             this->newStepTriggered = 0;
             this->inputGuide.setString("");
@@ -334,8 +333,16 @@ void AVL::button_initialize()
         }
 
         this->reset();
-        std::vector<int> values(99);
-        for (int i = 0; i < 99; ++i)
+        prepareNewInstruction();
+
+        auto addHighlightCodes = [&]
+        {
+            codeHighlight->introText.setString("Random AVLTree with " + std::to_string(valueFirst) + " node" + (valueFirst > 1 ? "s" : ""));
+            codeHighlight->codeStrings.resize(100); // fake highlight
+            this->codeHighlight->updateTexts();
+        };
+        std::vector<int> values(200);
+        for (int i = 0; i < 200; ++i)
             values[i] = i + 1;
         std::shuffle(values.begin(), values.end(), this->randomize);
         for (int i = 0; i < this->valueFirst; ++i)
@@ -343,19 +350,31 @@ void AVL::button_initialize()
             int newValue = values[i];
             assert(this->exist[newValue] == 0);
             this->exist[newValue] = 1;
-            createNewNode(newValue);
+    
+            this->animationAVL->newInstruction(this->root->next[0], this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+            addHighlightCodes();
+            insertAVLNode(root, root, newValue);
         }
-        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX); */
+        // this->animationAVL->updateNodePosition(this->root, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
         return;
     }
 
     if (this->choosingChildButton == "3Load File")
     {
-        /* if (!this->newStepTriggered)
+        if (!this->newStepTriggered)
             return;
         this->newStepTriggered = 0;
 
         this->reset();
+        prepareNewInstruction();
+
+        auto addHighlightCodes = [&]
+        {
+            codeHighlight->introText.setString("Load tree from file");
+            codeHighlight->codeStrings.resize(100); // fake highlight
+            this->codeHighlight->updateTexts();
+        };
+
         std::ifstream inp;
         inp.open("InputFiles/inputAVL.txt");
         int newValue = 0;
@@ -367,11 +386,13 @@ void AVL::button_initialize()
                 return;
             }
             this->exist[newValue] = 1;
-            createNewNode(newValue);
+            this->animationAVL->newInstruction(this->root->next[0], this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+            addHighlightCodes();
+            insertAVLNode(root, root, newValue);
         }
         inp.close();
 
-        this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX); */
+        // this->animationAVL->updateNodePosition(this->head, this->tail, this->start_x, this->start_y, this->nodeDistanceX);
         return;
     }
 }
@@ -564,6 +585,7 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     {
         return (newAVLNode(key, parentNode));
     }
+
     /* Highlight path */
     this->animationAVL->instructions.push_back({[this, curNode]()
                                                 { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); },
@@ -1041,14 +1063,14 @@ void AVL::operation_update(int oldValue, int newValue)
     this->exist[oldValue] = 0;
     this->exist[newValue] = 1;
 
-    auto addHighlightCodes = [&]
-    {
-        codeHighlight->introText.setString("Update " + std::to_string(oldValue) + " to " + std::to_string(newValue));
-        codeHighlight->codeStrings.push_back("Delete " + std::to_string(oldValue));         
-        codeHighlight->codeStrings.push_back("Insert " + std::to_string(newValue));       
-        this->codeHighlight->updateTexts();
-    };
-     addHighlightCodes();
+    // auto addHighlightCodes = [&]
+    // {
+    //     codeHighlight->introText.setString("Update " + std::to_string(oldValue) + " to " + std::to_string(newValue));
+    //     codeHighlight->codeStrings.push_back("Delete " + std::to_string(oldValue));         
+    //     codeHighlight->codeStrings.push_back("Insert " + std::to_string(newValue));       
+    //     this->codeHighlight->updateTexts();
+    // };
+    // addHighlightCodes();
 
     this->deleteAVLNode(root, root, oldValue);
     this->insertAVLNode(root, root, newValue);
@@ -1058,7 +1080,7 @@ void AVL::operation_update(int oldValue, int newValue)
 
 void AVL::prepareNewInstruction()
 {
-    std::cout << "Prepare new\n";
+    // std::cout << "Prepare new\n";
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
@@ -1372,10 +1394,12 @@ void AVL::render(sf::RenderTarget *target)
 }
 
 void AVL::reset()
-{
+{   
+    this->exist.resize(1005);
     exist.assign((int)exist.size(), 0);
+    
     this->DeleteNodePointers();
-    this->root = nullptr;
+    this->root = new AVLNode(0, 0, scale_x, scale_y, 100000, &font, &Colors);
     this->numberNode = 0;
 
     delete (this->animation);

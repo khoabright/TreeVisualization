@@ -112,7 +112,7 @@ void CodeHighlight::resetHighlight()
 }
 
 void CodeHighlight::updateHighlight()
-{
+{       
     resetHighlight();
     for (int i : currentLines) {
         highlightBlock[i].setFillColor(highlightColor);
