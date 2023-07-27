@@ -65,14 +65,13 @@ private:
     AVLNode *leftRotate(AVLNode *x);
     int getBalanceFactor(AVLNode *N);
     AVLNode *insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key);
-    AVLNode *AVLNodeWithMimumValue(AVLNode *AVLNode);
+    AVLNode *AVLNodeWithMaxValue(AVLNode *curNode);
     AVLNode *deleteAVLNode(AVLNode *root, AVLNode *parentNode, int key);
 
-    // Add
     void operation_add(int nodeValue);
-
-    // Delete
     void operation_delete(int nodeValue);
+    void operation_search(int nodeValue);
+    void operation_update(int oldValue, int newValue);
 
     void prepareNewInstruction();
 

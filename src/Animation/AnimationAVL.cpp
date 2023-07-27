@@ -46,6 +46,7 @@ void AnimationAVL::showNode(AVLNode *targetNode, std::string targetLabel, int &n
     /* For newNode only */
 
     targetNode->showNode = 1;
+    targetNode->inTree = 1;
 
     if (this->reverse && this->doneStep) {
         --numberNode;
@@ -68,6 +69,7 @@ void AnimationAVL::showNode(AVLNode *targetNode, std::string targetLabel, int &n
     targetNode->text.setScale(sf::Vector2f(scale, scale));
     targetNode->labelText.setScale(sf::Vector2f(scale, scale));
 
+    /* To appear from center */
     targetNode->shape.setPosition(targetNode->x_center - targetNode->radius * scale,
                                   targetNode->y_center - targetNode->radius * scale);
     targetNode->updateText();
@@ -77,15 +79,17 @@ void AnimationAVL::hideNode(AVLNode *targetNode, int &numberNode, std::vector<in
 {   
     /* hide Node => hide Arrow also */
     /* For deleted Node only */
-
     if (this->reverse && this->doneStep) {
         ++numberNode;
-        if (targetNode->next != nullptr) targetNode->showArrow[next_index] = 1;
+        for (int i = 0; i < numChild; ++i)
+            if (targetNode->next[i] != nullptr)
+                targetNode->showArrow[i] = 1;
         codeHighlight->prev_currentLines();
     }
     if (!this->reverse && this->startStep[stepChildIndex]) {
         --numberNode;
-        targetNode->showArrow[next_index] = 0;
+        for (int i = 0; i < numChild; ++i)
+            targetNode->showArrow[i] = 0;
         codeHighlight->next_currentLines(codeLines);
     }
     if (this->startStep[stepChildIndex]) startStep[stepChildIndex] = 0;
@@ -166,6 +170,7 @@ void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next
     }
     else {
         targetNode->showArrow[next_index] = 0;
+        // return;
     }
 
     /* If new node is last node, dont animate arrow */
@@ -284,7 +289,7 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
         if (curNode == nullptr) continue;
 
         for (int i = 0; i < numChild; ++i) {
-            // curNode->showArrow[i] = 0;
+            curNode->showArrow[i] = 0;
             if (curNode->next[i])
             {
                 makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);

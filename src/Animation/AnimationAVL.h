@@ -35,9 +35,6 @@ public:
     /* Use color as string because we want to modified later */
     void highlightCurrentNode(AVLNode *targetNode, std::string targetColor, std::vector<int> codeLines);
 
-    /* Recalculate balanceFactor and balance the tree */
-    void Balancing(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, std::vector<int> codeLines);
-
     void moveNode(AVLNode *targetNode, float x1, float y1);
 
     void Relayout(bool emptyList, AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, std::vector<int> codeLines);

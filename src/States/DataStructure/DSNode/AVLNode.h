@@ -56,6 +56,7 @@ struct AVLNode
     bool showNode = 0;
     bool showArrow[numChild] = {};
     bool showLabel = 1;
+    bool inTree = 0;
 
     AVLNode();
     AVLNode(float x, float y, float scale_x, float scale_y, int _val, sf::Font *_font, std::map<std::string, sf::Color>* Colors);

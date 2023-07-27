@@ -141,12 +141,10 @@ void AVL::initChildButtons()
         this->childButtons["Initialize"]["3Load File"]->instantTrigger = true;
     };
 
-    auto init_add = [&]()
-    {
+    auto init_add = [&]() {
     };
 
-    auto init_delete = [&]()
-    {
+    auto init_delete = [&]() {
     };
 
     auto init_update = [&]() {
@@ -192,25 +190,27 @@ void AVL::initInputFields()
     {
         ++idy;
         this->inputFields["Add"]["1Head"] = new InputField(this->inputFieldOriginX,
-                                                          this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
-                                                          this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
-                                                          &this->font, this->inputFieldCharacterSize,
-                                                          sf::Color::White, sf::Color::White, sf::Color::Black);
+                                                           this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
+                                                           this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
+                                                           &this->font, this->inputFieldCharacterSize,
+                                                           sf::Color::White, sf::Color::White, sf::Color::Black);
     };
 
     auto init_delete = [&]()
     {
         ++idy;
         this->inputFields["Delete"]["1Head"] = new InputField(this->inputFieldOriginX,
-                                                          this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
-                                                          this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
-                                                          &this->font, this->inputFieldCharacterSize,
-                                                          sf::Color::White, sf::Color::White, sf::Color::Black);
+                                                              this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
+                                                              this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
+                                                              &this->font, this->inputFieldCharacterSize,
+                                                              sf::Color::White, sf::Color::White, sf::Color::Black);
     };
 
     auto init_update = [&]()
     {
-        this->inputFields["Update"]["1Update"] = new InputField(this->inputFieldOriginX, 663.f * this->scale_y,
+        ++idy;
+        this->inputFields["Update"]["1Update"] = new InputField(this->inputFieldOriginX,
+                                                                this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
                                                                 this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
                                                                 &this->font, this->inputFieldCharacterSize,
                                                                 sf::Color::White, sf::Color::White, sf::Color::Black);
@@ -218,7 +218,9 @@ void AVL::initInputFields()
 
     auto init_search = [&]()
     {
-        this->inputFields["Search"]["1Search"] = new InputField(this->inputFieldOriginX, 693.f * this->scale_y,
+        ++idy;
+        this->inputFields["Search"]["1Search"] = new InputField(this->inputFieldOriginX,
+                                                                this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
                                                                 this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
                                                                 &this->font, this->inputFieldCharacterSize,
                                                                 sf::Color::White, sf::Color::White, sf::Color::Black);
@@ -375,11 +377,11 @@ void AVL::button_initialize()
 }
 
 void AVL::button_add()
-{   
+{
     this->choosingChildButton = "1Head";
 
     if (this->newStepTriggered)
-    {   
+    {
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
 
@@ -402,7 +404,7 @@ void AVL::button_delete()
     this->choosingChildButton = "1Head";
 
     if (this->newStepTriggered)
-    {   
+    {
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
         this->operation_delete(this->valueFirst);
@@ -416,6 +418,19 @@ void AVL::button_delete()
 
 void AVL::button_update()
 {
+    this->choosingChildButton = "1Update";
+
+    if (this->newStepTriggered)
+    {
+        this->newStepTriggered = 0;
+        this->inputGuide.setString("");
+        this->operation_update(this->valueFirst, this->valueSecond);
+        return;
+    }
+    else
+    {
+        this->inputGuide.setString("Input [old value, new value] to update");
+    }
 }
 
 void AVL::button_search()
@@ -426,7 +441,7 @@ void AVL::button_search()
     {
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
-        // this->searchNode(this->valueFirst);
+        this->operation_search(this->valueFirst);
         return;
     }
     else
@@ -449,9 +464,12 @@ int AVL::heightAVL(AVLNode *node)
 }
 
 AVLNode *AVL::newAVLNode(int key, AVLNode *parentNode)
-{   
+{
     int posX = start_x, posY = start_y;
-    if (numberNode > 0) {posX -= 3 * nodeDistanceX;}
+    if (numberNode > 0)
+    {
+        posX -= 3 * nodeDistanceX;
+    }
 
     AVLNode *newNode = new AVLNode(posX, posY, scale_x, scale_y, key, &font, &Colors);
     newNode->key = key;
@@ -469,7 +487,6 @@ AVLNode *AVL::newAVLNode(int key, AVLNode *parentNode)
 AVLNode *AVL::rightRotate(AVLNode *y)
 {
     AVLNode *x = y->next[0];
-    // std::cout<<"rightRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = x->next[1];
 
     x->next[1] = y;
@@ -477,11 +494,11 @@ AVLNode *AVL::rightRotate(AVLNode *y)
     /* connect function will be called immediately after this */
 
     y->heightAVL = std::max(heightAVL(y->next[0]),
-                         heightAVL(y->next[1])) +
-                1;
+                            heightAVL(y->next[1])) +
+                   1;
     x->heightAVL = std::max(heightAVL(x->next[0]),
-                         heightAVL(x->next[1])) +
-                1;
+                            heightAVL(x->next[1])) +
+                   1;
 
     this->animationAVL->instructions.push_back({[this, x, y]()
                                                 { this->animationAVL->connectNodes(x, y, 1, {1}); },
@@ -503,20 +520,17 @@ AVLNode *AVL::rightRotate(AVLNode *y)
 AVLNode *AVL::leftRotate(AVLNode *x)
 {
     AVLNode *y = x->next[1];
-    // std::cout<<"leftRotate: x,y="<<x->key<<' '<<y->key<<'\n';
     AVLNode *T2 = y->next[0];
 
     y->next[0] = x;
     x->next[1] = T2;
 
     x->heightAVL = std::max(heightAVL(x->next[0]),
-                         heightAVL(x->next[1])) +
-                1;
+                            heightAVL(x->next[1])) +
+                   1;
     y->heightAVL = std::max(heightAVL(y->next[0]),
-                         heightAVL(y->next[1])) +
-                1;
-
-    // v.push_back([x, L = std::to_string(x->heightAVL)](){changeNodeLabel(x, L);}); we can use this to make sure string label is copied
+                            heightAVL(y->next[1])) +
+                   1;
 
     this->animationAVL->instructions.push_back({[this, y, x]()
                                                 { this->animationAVL->connectNodes(y, x, 0, {1}); },
@@ -528,12 +542,9 @@ AVLNode *AVL::leftRotate(AVLNode *x)
                                                 { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {5}); }});
     waitAnimation();
 
-    
     // this->animationAVL->instructions.push_back({[this, x, T2]()
     //                                             { this->animationAVL->connectNodes(x, T2, 1, {1}); }});
     // waitAnimation();
-
-    
 
     return y;
 }
@@ -549,7 +560,8 @@ int AVL::getBalanceFactor(AVLNode *N)
 AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
 {
     // Find the correct postion and insert the curNode
-    if (curNode == NULL) {
+    if (curNode == NULL)
+    {
         return (newAVLNode(key, parentNode));
     }
     /* Highlight path */
@@ -560,6 +572,7 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     waitAnimation();
 
     /* Move down to its subtree and connect */
+    if (key == curNode->key) return curNode;
     int direction = (key > curNode->key);
     // curNode->next[direction] = insertAVLNode(curNode->next[direction], key);
     auto *temp = insertAVLNode(curNode->next[direction], curNode, key);
@@ -581,7 +594,6 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     //                                             { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
     // waitAnimation();
 
-
     // Update the balance factor of each curNode and
     // balance the tree
 
@@ -591,7 +603,7 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     // Update the balance factor of curNode and
     // balance the tree
     curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
-                                   heightAVL(curNode->next[1]));
+                                      heightAVL(curNode->next[1]));
     this->animationAVL->instructions.push_back({[this, curNode]()
                                                 { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); },
                                                 [this, curNode]()
@@ -602,7 +614,8 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     // this->animationAVL->instructions.push_back({[this, curNode]()
     //                                             { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); }});
 
-    if (curNode == root) return nullptr;
+    if (curNode == root)
+        return nullptr;
 
     int balanceFactor = getBalanceFactor(curNode);
     if (balanceFactor > 1)
@@ -632,11 +645,20 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     return curNode;
 }
 
-AVLNode *AVL::AVLNodeWithMimumValue(AVLNode *node)
+AVLNode *AVL::AVLNodeWithMaxValue(AVLNode *curNode)
 {
-    AVLNode *current = node;
-    while (current->next[0] != NULL)
-        current = current->next[0];
+    AVLNode *current = curNode;
+    this->animationAVL->instructions.push_back({[this, curNode]()
+                                                { this->animationAVL->highlightCurrentNode(curNode, "passedColor", {5}); }});
+    while (current->next[1] != NULL)
+    {
+        this->animationAVL->instructions.push_back({[this, curNode]()
+                                                    { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); },
+                                                    [this, nextNode = curNode->next[1]]()
+                                                    { this->animationAVL->highlightCurrentNode(nextNode, "passedColor", {5}); }});
+        waitAnimation();
+        current = current->next[1];
+    }
     return current;
 }
 
@@ -647,17 +669,36 @@ AVLNode *AVL::deleteAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
         return curNode;
 
     std::string currentColor = (key != curNode->key) ? "newColor" : "deleteColor";
-    /* Highlight path */
+    /* Highlight path, also relayout for inverse direction */
     this->animationAVL->instructions.push_back({[this, curNode, currentColor]()
                                                 { this->animationAVL->highlightCurrentNode(curNode, currentColor, {5}); },
                                                 [this, parentNode]()
-                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {5}); }});
+                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {5}); }, 
+                                                [this]()
+                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
     waitAnimation();
 
     int direction = (key > curNode->key);
 
-    if (key != curNode->key) {
-        curNode->next[direction] = deleteAVLNode(curNode->next[direction], curNode, key);
+    if (key != curNode->key)
+    {
+        auto *temp = deleteAVLNode(curNode->next[direction], curNode, key);
+
+        /* Make connection and highlight current node */
+        std::string passColor = (curNode == root) ? "reachColor" : "normal"; // highlight real root node
+
+        std::vector<std::function<void()>> temp_vec = {
+            [this, curNode, temp, direction]()
+            { this->animationAVL->connectNodes(curNode, temp, direction, {5}); },
+            [this, curNode]()
+            { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); }};
+
+        if (temp != nullptr)
+            temp_vec.push_back([this, temp, passColor]()
+                               { this->animationAVL->highlightCurrentNode(temp, passColor, {5}); });
+
+        this->animationAVL->instructions.push_back(temp_vec);
+        waitAnimation();
     }
     else
     {
@@ -667,42 +708,69 @@ AVLNode *AVL::deleteAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
             AVLNode *temp = curNode->next[0] ? curNode->next[0] : curNode->next[1];
             if (temp == NULL)
             {
-                temp = curNode;
+                // temp = curNode;
                 // curNode = NULL;
-                
-                // this->animationAVL->instructions.push_back({[this, curNode, parentNode]()
-                //                                 { this->animationAVL->connectNodes(, nullptr, direction, {5}); },
-                //                                 [this, curNode]()
-                //                                 { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); },
-                //                                 [this, temp, passColor]()
-                //                                 { this->animationAVL->highlightCurrentNode(temp, passColor, {5}); }});
 
                 this->animationAVL->instructions.push_back({[this, curNode]()
                                                             { this->animationAVL->hideNode(curNode, numberNode, {5}); }});
                 waitAnimation();
                 return nullptr;
             }
-            else {
-                *curNode = *temp;
+            else
+            {
+                //*curNode = *temp;
+                this->animationAVL->instructions.push_back({[this, curNode]()
+                                                            { this->animationAVL->hideNode(curNode, numberNode, {5}); }});
+                waitAnimation();
+                return temp;
             }
             // free(temp);
         }
         else
         {
-            AVLNode *temp = AVLNodeWithMimumValue(curNode->next[1]);
-            curNode->key = temp->key;
-            curNode->next[1] = deleteAVLNode(curNode->next[1], curNode,
-                                        temp->key);
+            AVLNode *maxNode = AVLNodeWithMaxValue(curNode->next[0]);
+            // curNode->key = maxNode->key;
+            this->animationAVL->instructions.push_back({[this, curNode, newVal = maxNode->key]()
+                                                        { this->animationAVL->changeNodeValue(curNode, newVal, {5}); },
+                                                        [this, curNode, maxNode]()
+                                                        { this->animationAVL->highlightCurrentNode(maxNode, "normal", {5}); }});
+            waitAnimation();
+
+            // curNode->next[0] = deleteAVLNode(curNode->next[0], curNode, maxNode->key);
+            auto *temp = deleteAVLNode(curNode->next[0], curNode, maxNode->key);
+            /* Make connection and highlight current node */
+            std::string passColor = (curNode == root) ? "reachColor" : "normal"; // highlight real root node
+            std::vector<std::function<void()>> temp_vec = {
+                [this, curNode, temp]()
+                { this->animationAVL->connectNodes(curNode, temp, 0, {5}); },
+                [this, curNode]()
+                { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); }};
+
+            if (temp != nullptr)
+                temp_vec.push_back([this, temp, passColor]()
+                                   { this->animationAVL->highlightCurrentNode(temp, passColor, {5}); });
+            this->animationAVL->instructions.push_back(temp_vec);
+            waitAnimation();
         }
     }
 
-    if (curNode == NULL)
+    if (curNode == nullptr)
         return curNode;
 
     // Update the balance factor of each AVLNode and
     // balance the tree
     curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
-                                heightAVL(curNode->next[1]));
+                                      heightAVL(curNode->next[1]));
+    this->animationAVL->instructions.push_back({[this, curNode]()
+                                                { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); },
+                                                [this, curNode]()
+                                                { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); },
+                                                [this]()
+                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+    waitAnimation();
+
+    if (curNode == root)
+        return nullptr;
     int balanceFactor = getBalanceFactor(curNode);
     if (balanceFactor > 1)
     {
@@ -731,7 +799,6 @@ AVLNode *AVL::deleteAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     return curNode;
 }
 
-// Add
 
 void AVL::operation_add(int nodeValue)
 {
@@ -747,7 +814,7 @@ void AVL::operation_add(int nodeValue)
         }
         if (nodeValue < 1 || nodeValue > 200)
         {
-            this->inputWarning.setString("Value should be in range [1..99]");
+            this->inputWarning.setString("Value should be in range [1..200]");
             return false;
         }
 
@@ -757,14 +824,18 @@ void AVL::operation_add(int nodeValue)
             return false;
         }
 
-        if (this->exist[nodeValue])
-        {
-            this->inputWarning.setString("No duplicate vertex allowed!");
-            return false;
-        }
+        // if (this->exist[nodeValue])
+        // {
+        //     this->inputWarning.setString("No duplicate vertex allowed!");
+        //     return false;
+        // }
         return true;
     };
-    if (!preCheck()) {return;}
+    if (!preCheck())
+    {
+        return;
+    }
+    
     this->exist[nodeValue] = 1;
 
     auto addHighlightCodes = [&]
@@ -784,21 +855,9 @@ void AVL::operation_add(int nodeValue)
 
     insertAVLNode(this->root, this->root, nodeValue);
 
-    // std::cout<<"\nkeyRoot,depth,L,R="<<root->key<<' '<<root->depthAVL<<' ';
-    // if (root->next[0]) std::cout << root->next[0]->key<<' ';
-    // if (root->next[1]) std::cout << root->next[1]->key<<' ';
-    // std::cout<<'\n';
-
-    // this->animationAVL->instructions.push_back(
-    //     {[this]()
-    //      { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); }});
-    // waitAnimation();
-    
     endOperation();
     return;
 }
-
-// Delete
 
 void AVL::operation_delete(int nodeValue)
 {
@@ -814,7 +873,7 @@ void AVL::operation_delete(int nodeValue)
         }
         if (nodeValue < 1 || nodeValue > 200)
         {
-            this->inputWarning.setString("Value should be in range [1..99]");
+            this->inputWarning.setString("Value should be in range [1..200]");
             return false;
         }
 
@@ -824,15 +883,19 @@ void AVL::operation_delete(int nodeValue)
             return false;
         }
 
-        if (!this->exist[nodeValue])
-        {
-            this->inputWarning.setString("No node exist!");
-            return false;
-        }
+        // if (!this->exist[nodeValue])
+        // {
+        //     this->inputWarning.setString("No node exist!");
+        //     return false;
+        // }
         return true;
     };
-    if (!preCheck()) {return;}
-    // this->exist[nodeValue] = 0;
+    if (!preCheck())
+    {
+        return;
+    }
+
+    this->exist[nodeValue] = 0;
 
     auto addHighlightCodes = [&]
     {
@@ -849,15 +912,153 @@ void AVL::operation_delete(int nodeValue)
     };
     addHighlightCodes();
 
+    // this->animationAVL->instructions.push_back({[this]()
+    //                                             { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+
     deleteAVLNode(this->root, this->root, nodeValue);
 
+    // this->animationAVL->instructions.push_back({[this]()
+    //                                             { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+
+    endOperation();
+    return;
+}
+
+void AVL::operation_search(int nodeValue)
+{      
+    this->prepareNewInstruction();
+    this->button_play();
+
+    auto preCheck = [&]()
+    {
+        if (nodeValue == -1)
+        {
+            this->inputWarning.setString("Wrong input format");
+            return false;
+        }
+        if (nodeValue < 1 || nodeValue > 200)
+        {
+            this->inputWarning.setString("Value should be in range [1..200]");
+            return false;
+        }
+
+        // if (this->exist[nodeValue])
+        // {
+        //     this->inputWarning.setString("No duplicate vertex allowed!");
+        //     return false;
+        // }
+        return true;
+    };
+    if (!preCheck())
+    {
+        return;
+    }
+
+    auto addHighlightCodes = [&]
+    {
+        codeHighlight->introText.setString("Insert " + std::to_string(nodeValue));
+        codeHighlight->codeStrings.push_back("Node cur = head");                      // 0
+        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)");      // 1
+        codeHighlight->codeStrings.push_back("   cur = cur.next");                    // 2
+        codeHighlight->codeStrings.push_back("Node nxt = cur.next");                  // 3
+        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");           // 4
+        codeHighlight->codeStrings.push_back("newNode.next = nxt");                   // 5
+        codeHighlight->codeStrings.push_back("cur.next = newNode");                   // 6
+        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
+        this->codeHighlight->updateTexts();
+    };
+    addHighlightCodes();
+
+    AVLNode *curNode = root;
+    while (curNode != nullptr)
+    {
+        if (curNode->key == nodeValue)
+        {
+            // this->animationAVL->instructions.push_back({[this, curNode]()
+            //                                     { this->animationAVL->highlightCurrentNode(curNode, "reachColor", {5}); }});
+
+            break;
+        }
+
+        int direction = (nodeValue > curNode->key);
+
+        if (!curNode->next[direction])
+        {
+            this->animationAVL->instructions.push_back({[this, curNode]()
+                                                        { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); }});
+            waitAnimation();
+            break;
+        }
+        std::string nextColor = (curNode->next[direction]->key == nodeValue) ? "reachColor" : "newColor";
+
+        this->animationAVL->instructions.push_back({[this, curNode]()
+                                                    { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); },
+                                                    [this, curNode, direction, nextColor]()
+                                                    { this->animationAVL->highlightCurrentNode(curNode->next[direction], nextColor, {5}); }});
+        waitAnimation();
+        curNode = curNode->next[direction];
+    }
+
+    endOperation();
+    return;
+}
+
+void AVL::operation_update(int oldValue, int newValue)
+{
+    this->prepareNewInstruction();
+    this->button_play();
+
+    auto preCheck = [&]()
+    {
+        if (oldValue == -1 || newValue == -1)
+        {
+            this->inputWarning.setString("Wrong input format");
+            return false;
+        }
+        if (oldValue < 1 || oldValue > 200 || newValue < 1 || newValue > 200)
+        {
+            this->inputWarning.setString("Value should be in range [1..200]");
+            return false;
+        }
+
+        if (!this->exist[oldValue])
+        {
+            this->inputWarning.setString("Old value not found!");
+            return false;
+        }
+
+        if (this->exist[newValue])
+        {
+            this->inputWarning.setString("New value existed!");
+            return false;
+        }
+        return true;
+    };
+    if (!preCheck())
+    {
+        return;
+    }
+    this->exist[oldValue] = 0;
+    this->exist[newValue] = 1;
+
+    auto addHighlightCodes = [&]
+    {
+        codeHighlight->introText.setString("Update " + std::to_string(oldValue) + " to " + std::to_string(newValue));
+        codeHighlight->codeStrings.push_back("Delete " + std::to_string(oldValue));         
+        codeHighlight->codeStrings.push_back("Insert " + std::to_string(newValue));       
+        this->codeHighlight->updateTexts();
+    };
+     addHighlightCodes();
+
+    this->deleteAVLNode(root, root, oldValue);
+    this->insertAVLNode(root, root, newValue);
     endOperation();
     return;
 }
 
 void AVL::prepareNewInstruction()
 {
-    std::cout<<"Prepare new\n";
+    std::cout << "Prepare new\n";
     this->animation->finishStep();
     bool trash = 0;
     this->animationAVL->last(trash, &this->stepText);
@@ -1085,7 +1286,7 @@ void AVL::renderNode(sf::RenderTarget *target)
 }
 
 void AVL::renderAnimation()
-{   
+{
     // std::cout<<"runState="<<runState<<'\n';
     if (this->doneAnimation)
     {
@@ -1195,19 +1396,19 @@ void AVL::reset()
 }
 
 void AVL::waitAnimation()
-{   
+{
     /* This function is called immediately after pushing new Animation */
-    this->doneAnimation = 0; 
-    while (!this->doneAnimation) {
+    this->doneAnimation = 0;
+    while (!this->doneAnimation)
+    {
         this->animationAVL->play(this->doneAnimation, &this->stepText);
-        // std::cout<<"Waiting\n";
     }
     return;
 }
 
 void AVL::endOperation()
 {
-    std::cout<<"doneOperation\n";
+    std::cout << "doneOperation\n";
     // doneOperation = 1;
     this->animationAVL->animationTime = float(speedGap * maxSpeed) / currentSpeed;
 
