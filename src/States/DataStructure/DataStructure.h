@@ -6,7 +6,7 @@
 #include "State.h"
 #include "Button.h"
 #include "InputField.h"
-#include "AnimationAVL.h"
+#include "Animation.h"
 
 class DataStructure : public State
 {
@@ -87,7 +87,7 @@ protected:
 
     int valueFirst = 0, valueSecond = 0;  /* value seperated by comma in inputField */
     bool newStepTriggered = 0;
-    bool doneAnimation = 1, doneOperation = 1;
+    bool doneAnimation = 1;
     std::string runState = "";
 
     // Functions

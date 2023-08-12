@@ -154,10 +154,16 @@ void MainMenuState::updateCursor()
 
 void MainMenuState::updateButtons()
 {
-    //AVL Tree
-    if (this->buttons["AVL Tree"]->isPressed())
+    // //AVL Tree
+    // if (this->buttons["AVL Tree"]->isPressed())
+    // {
+    //     this->states->push(new AVL(this->window, this->supportedKeys, this->states));
+    // }
+
+    // Heap
+    if (this->buttons["Heap"]->isPressed())
     {
-        this->states->push(new AVL(this->window, this->supportedKeys, this->states));
+        this->states->push(new Heap(this->window, this->supportedKeys, this->states));
     }
 
     // Quit the game
