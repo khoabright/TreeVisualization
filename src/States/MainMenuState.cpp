@@ -160,10 +160,16 @@ void MainMenuState::updateButtons()
     //     this->states->push(new AVL(this->window, this->supportedKeys, this->states));
     // }
 
-    // Heap
-    if (this->buttons["Heap"]->isPressed())
+    // // Heap
+    // if (this->buttons["Heap"]->isPressed())
+    // {
+    //     this->states->push(new Heap(this->window, this->supportedKeys, this->states));
+    // }
+
+    // Hash
+    if (this->buttons["Hash Table"]->isPressed())
     {
-        this->states->push(new Heap(this->window, this->supportedKeys, this->states));
+        this->states->push(new Hash(this->window, this->supportedKeys, this->states));
     }
 
     // Quit the game
