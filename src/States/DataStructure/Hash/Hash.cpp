@@ -319,15 +319,20 @@ void Hash::button_initialize()
         {
             this->newStepTriggered = 0;
             this->inputGuide.setString("");
-            if (this->valueFirst > maxNode)
+            if (this->valueFirst > maxM)
             {
-                this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+                this->inputWarning.setString("Sorry, maximum modulo is " + std::to_string(maxM));
+                return;
+            }
+            if (this->valueSecond > maxNode)
+            {
+                this->inputWarning.setString("Sorry, maximum size is " + std::to_string(maxNode));
                 return;
             }
         }
         else
         {
-            this->inputGuide.setString("Input a size");
+            this->inputGuide.setString("Input [mod, size]");
             return;
         }
 
@@ -336,21 +341,22 @@ void Hash::button_initialize()
 
         auto addHighlightCodes = [&]
         {
-            codeHighlight->introText.setString("Random HashTree with " + std::to_string(valueFirst) + " node" + (valueFirst > 1 ? "s" : ""));
+            // codeHighlight->introText.setString("Random HashTree with " + std::to_string(valueFirst) + " node" + (valueFirst > 1 ? "s" : ""));
             codeHighlight->codeStrings.resize(100); // fake highlight
             this->codeHighlight->updateTexts();
         };
+        initHash(valueFirst);
         std::vector<int> values(200);
         for (int i = 0; i < 200; ++i)
             values[i] = i + 1;
         std::shuffle(values.begin(), values.end(), this->randomize);
-        for (int i = 0; i < this->valueFirst; ++i)
+        for (int i = 0; i < this->valueSecond; ++i)
         {
             int newValue = values[i];
     
-            // this->animationHash->newInstruction(nullptr, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+            this->animationHash->newInstruction(Nodes, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
             addHighlightCodes();
-            // insertHashNode(root, root, newValue);
+            insertHashNode(newValue);
         }
         return;
     }
@@ -366,7 +372,7 @@ void Hash::button_initialize()
 
         auto addHighlightCodes = [&]
         {
-            codeHighlight->introText.setString("Load tree from file");
+            codeHighlight->introText.setString("Load Hash Table from file");
             codeHighlight->codeStrings.resize(100); // fake highlight
             this->codeHighlight->updateTexts();
         };
@@ -374,11 +380,13 @@ void Hash::button_initialize()
         std::ifstream inp;
         inp.open("InputFiles/inputHash.txt");
         int newValue = 0;
+        inp >> numberNode >> M_hash;
+        initHash(M_hash);
         while (inp >> newValue)
         {
-            // this->animationHash->newInstruction(this->root->next[0], this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
+            this->animationHash->newInstruction(Nodes, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
             addHighlightCodes();
-            // insertHashNode(root, root, newValue);
+            insertHashNode(newValue);
         }
         inp.close();
 
@@ -395,11 +403,6 @@ void Hash::button_add()
     {
         this->newStepTriggered = 0;
         this->inputGuide.setString("");
-
-        /* Use thread because the animation should run parallel to Rendering*/
-        // this->thread_operation = new sf::Thread(&operation_add, std::ref(this->valueFirst));
-        // this->thread_operation = new sf::Thread([this]() { operation_add(this->valueFirst); });
-        // this->thread_operation->launch();
         this->operation_add(this->valueFirst);
 
         return;
@@ -544,7 +547,7 @@ void Hash::operation_add(int nodeValue)
 
         if (numberNode + 1 > maxNode)
         {
-            this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+            this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
             return false;
         }
 
@@ -595,7 +598,7 @@ void Hash::operation_delete(int nodeValue)
 
         if (numberNode + 1 > maxNode)
         {
-            this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+            this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
             return false;
         }
 
@@ -1021,9 +1024,9 @@ void Hash::reset()
     this->DeleteNodePointers();
     // this->root = new HashNode(0, 0, scale_x, scale_y, 100000, &font, &Colors);
     this->numberNode = 0, M_hash = 0;
+    initHash(20); 
     
     //init HashTable
-    initHash(20);
 
     delete (this->animation);
 

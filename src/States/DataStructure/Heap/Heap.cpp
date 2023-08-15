@@ -252,7 +252,7 @@ void Heap::button_initialize()
             this->inputGuide.setString("");
             if (this->valueFirst > maxNode)
             {
-                this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+                this->inputWarning.setString("Sorry, maximum size is " + std::to_string(maxNode));
                 return;
             }
         }
@@ -523,7 +523,7 @@ void Heap::operation_add(int nodeValue)
 
         if (numberNode + 1 > maxNode)
         {
-            this->inputWarning.setString("Sorry, the std::maximum size is " + std::to_string(maxNode));
+            this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
             return false;
         }
 
