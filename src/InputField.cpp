@@ -9,9 +9,10 @@ void InputField::handleTextEntered(sf::Uint32 unicode)
             this->inputString.pop_back();
         }
     }
-    else if ((unicode >= 48 && unicode <= 57) || (unicode == 44)) // numbers or comma only
-    {
-        this->inputString += static_cast<char>(unicode);
+    else if ((unicode >= 48 && unicode <= 57) || ((unicode >= 97 && unicode <= 122)) || (unicode == 44)) // numbers or comma only
+    {   
+        if (unicode >= 97 && unicode <= 122) this->inputString += static_cast<char>(unicode - 32); // capitalize
+        else this->inputString += static_cast<char>(unicode);
     }
 
     /* Check for full box */

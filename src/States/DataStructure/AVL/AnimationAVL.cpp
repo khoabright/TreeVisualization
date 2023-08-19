@@ -26,21 +26,6 @@ void AnimationAVL::addCodeLines(std::vector<int> codeLines)
     else codeHighlight->next_currentLines(codeLines);
 }
 
-// void AnimationAVL::changeRoot(int &idx_root, std::vector<AVLNode *> array_root, AVLNode* new_root, AVLNode* root, std::vector<int> codeLines)
-// {
-//     if (!this->startStep[stepChildIndex]) return;
-//     this->startStep[stepChildIndex] = 0;
-
-//     if (this->reverse) {
-//         prevRoot();
-//         codeHighlight->prev_currentLines();
-//         return;
-//     }
-//     new(targetLabel);
-//     targetNode->nextLabel();
-//     codeHighlight->next_currentLines(codeLines);
-// }
-
 void AnimationAVL::showNode(AVLNode *targetNode, std::string targetLabel, int &numberNode, std::vector<int> codeLines) 
 {   
     /* For newNode only */
