@@ -173,9 +173,15 @@ void MainMenuState::updateButtons()
     // }
 
     // Trie
-    if (this->buttons["Trie"]->isPressed())
+    // if (this->buttons["Trie"]->isPressed())
+    // {
+    //     this->states->push(new Trie(this->window, this->supportedKeys, this->states));
+    // }
+
+    //Graph
+    if (this->buttons["Graph"]->isPressed())
     {
-        this->states->push(new Trie(this->window, this->supportedKeys, this->states));
+        this->states->push(new Graph(this->window, this->supportedKeys, this->states));
     }
 
     // Quit the game

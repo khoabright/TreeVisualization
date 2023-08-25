@@ -6,7 +6,8 @@
 // #include "AVL.h"
 // #include "Heap.h"
 // #include "Hash.h"
-#include "Trie.h"
+// #include "Trie.h"
+#include "Graph.h"
 #include "Button.h"
 
 class MainMenuState : public State
