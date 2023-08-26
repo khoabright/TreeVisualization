@@ -592,8 +592,6 @@ void Graph::operation_MST(int startNode)
 
     std::vector<bool> visited(numberNode + 2);
 
-    // queue<int> q;   
-    // q.push(Nodes[startNode]);
     this->animationGraph->instructions.push_back({[this, node = Nodes[startNode]]()
                                                       { this->animationGraph->highlightCurrentNode(node, "normalFillColor", "newColor", {1}); }});
     this->animationGraph->instructions.push_back({[this, node = Nodes[startNode]]()
@@ -645,6 +643,83 @@ void Graph::operation_MST(int startNode)
 
 void Graph::operation_dijkstra(int startNode)
 {
+    this->prepareNewInstruction();
+    this->button_play();
+
+    auto preCheck = [&]()
+    {
+        return true;
+    };
+    if (!preCheck())
+    {
+        return;
+    }
+    
+    
+    auto addHighlightCodes = [&]
+    {
+        codeHighlight->introText.setString("Dijkstra's Algorithm");
+        codeHighlight->codeStrings.push_back("Node cur = head");                      // 0
+        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)");      // 1
+        codeHighlight->codeStrings.push_back("   cur = cur.next");                    // 2
+        codeHighlight->codeStrings.push_back("Node nxt = cur.next");                  // 3
+        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");           // 4
+        codeHighlight->codeStrings.push_back("newNode.next = nxt");                   // 5
+        codeHighlight->codeStrings.push_back("cur.next = newNode");                   // 6
+        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
+        this->codeHighlight->updateTexts();
+    };
+    addHighlightCodes();
+
+    std::vector<bool> visited(numberNode + 2);
+
+    this->animationGraph->instructions.push_back({[this, node = Nodes[startNode]]()
+                                                      { this->animationGraph->highlightCurrentNode(node, "normalFillColor", "newColor", {1}); }});
+    this->animationGraph->instructions.push_back({[this, node = Nodes[startNode]]()
+                                                      { this->animationGraph->highlightCurrentNode(node, "newColor", "newColor", {1}); }});
+    waitAnimation();   
+    visited[startNode] = 1;
+
+    int lastVisit = startNode;
+
+    while (1) // break when no update
+    {
+        std::pair<int, GraphEdge*> miniEdge = {1e9, nullptr};
+
+        for (auto edge : Edges)
+        {
+            int u = edge->from, v = edge->to;
+            if ((visited[u] && visited[v]) || (!visited[u] && !visited[v])) continue;
+            miniEdge = min(miniEdge, {edge->cost, edge});
+        }
+        if (miniEdge.second == nullptr) break; // no update
+
+        GraphEdge *edge = miniEdge.second;
+        int u = edge->from, v = edge->to;
+        assert(visited[u] || visited[v]);
+        if (visited[v]) std::swap(u, v);
+
+        this->animationGraph->instructions.push_back({[this, node_u = Nodes[u], node_v = Nodes[v], _edge = edge]()
+                                                      { this->animationGraph->connectNodes(node_u, node_v, _edge, {1}); },
+                                                      [this, lastNode = Nodes[lastVisit]]()
+                                                      { this->animationGraph->highlightCurrentNode(lastNode, "normalFillColor", "reachColor", {1}); }});
+        waitAnimation();
+
+        this->animationGraph->instructions.push_back({[this, node = Nodes[v]]()
+                                                        { this->animationGraph->highlightCurrentNode(node, "newColor", "newColor", {1}); }});
+        waitAnimation();
+
+        visited[u] = visited[v] = 1;
+        lastVisit = v;
+    }
+
+    this->animationGraph->instructions.push_back({[this, lastNode = Nodes[lastVisit]]()
+                                                    {
+                                                        this->animationGraph->highlightCurrentNode(lastNode, "normalFillColor", "reachColor", {1});
+                                                    }});
+    waitAnimation();
+
+    endOperation();
 }
 
 void Graph::prepareNewInstruction()

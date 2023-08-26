@@ -20,7 +20,7 @@ TrieNode::TrieNode(float x, float y, float scale_x, float scale_y, int _key, sf:
     scaleSize();
 
     //Variables
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         idx_next[i] = -1;
         newNext(nullptr, i);
         nextNext(i);
@@ -56,7 +56,7 @@ TrieNode::TrieNode(float x, float y, float scale_x, float scale_y, int _key, sf:
     //Arrow
     arrow_img.loadFromFile("Resources/Images/rightArrow.png");
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         arrow[i].setTexture(&arrow_img);
         arrow[i].setSize(sf::Vector2f(100.f, 40.f));
     }
@@ -86,14 +86,14 @@ void TrieNode::reset()
     array_fillColor.clear();
     array_outlineColor.clear();
     array_label.clear();
-    for (int i = 0; i < numChild; ++i) array_next[i].clear(); 
+    for (int i = 0; i < numChildTrie; ++i) array_next[i].clear(); 
     array_key.clear();
     array_pos.clear();
 
     idx_fillColor = -1;
     idx_outlineColor = -1;
     idx_label = -1;
-    for (int i = 0; i < numChild; ++i) idx_next[i] = -1;
+    for (int i = 0; i < numChildTrie; ++i) idx_next[i] = -1;
     idx_key = -1;
     idx_pos = -1;
 
@@ -105,7 +105,7 @@ void TrieNode::reset()
     newLabel(this->labelString);
     nextLabel();
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         newNext(this->next[i], i);
         nextNext(i);
     }
@@ -121,7 +121,7 @@ void TrieNode::reset()
 
 bool TrieNode::isLeaf()
 {   
-    for (int i = 0; i < numChild; ++i)
+    for (int i = 0; i < numChildTrie; ++i)
         if (this->next[i] != nullptr) return false;
     return true;
 }
@@ -226,7 +226,7 @@ void TrieNode::nextColor()
 //Text & Label
 void TrieNode::updateText()
 {
-    if (key < numChild) {
+    if (key < numChildTrie) {
         std::string tmpStr;
         tmpStr = key + 'A';
         this->text.setString(tmpStr);
@@ -324,7 +324,7 @@ void TrieNode::render(sf::RenderTarget *target)
         target->draw(this->text);
     }
 
-    for (int i = 0; i < numChild; ++i)
+    for (int i = 0; i < numChildTrie; ++i)
         if (this->showArrow[i])
             target->draw(this->arrow[i]);
 
@@ -332,7 +332,7 @@ void TrieNode::render(sf::RenderTarget *target)
         target->draw(this->labelText);
 }
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
+void makeArrowTrie(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
 {
     /* Replace targetArrow such that it point from node1 -> node 2 */
 
@@ -428,7 +428,7 @@ void RecalTreeAmountLeftRight(TrieNode *root, bool isRoot)
     root->amountLR[1] = 0;
 
     bool notFirstChild = 0;
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         if (!root->next[i]) continue;
         root->next[i]->depthTrie = root->depthTrie + 1;
         root->next[i]->amountLR[0] = root->amountLR[0] + root->amountLR[1] + notFirstChild;
@@ -441,7 +441,7 @@ void RecalTreeAmountLeftRight(TrieNode *root, bool isRoot)
 
 void RecalTreePosition(TrieNode *root, float start_x, float start_y, float distance_x, float distance_y)
 {
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         if (!root->next[i]) continue;
         RecalTreePosition(root->next[i], start_x, start_y, distance_x, distance_y);
     }
@@ -458,18 +458,18 @@ void ResetTree(TrieNode *root)
 {   
     if (root == nullptr) return;
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         ResetTree(root->next[i]);
     }
 
     // root->labelString = "";
     root->showNode = 1;
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildTrie; ++i) {
         root->showArrow[i] = 0;
         if (root->next[i])
         {
-            makeArrow(&root->shape, &root->next[i]->shape, &root->arrow[i]);
+            makeArrowTrie(&root->shape, &root->next[i]->shape, &root->arrow[i]);
             root->showArrow[i] = 1;
         }
     }

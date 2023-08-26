@@ -181,7 +181,7 @@ void AnimationHash::connectNodes(HashNode *targetNode, HashNode *nextNode, std::
 
         if (targetNode->next != nullptr) {
             targetNode->showArrow = 1;
-            this->makeArrow(&targetNode->shape, &targetNode->next->shape, &targetNode->arrow);
+            this->makeArrowHash(&targetNode->shape, &targetNode->next->shape, &targetNode->arrow);
         }
         else {
             targetNode->showArrow = 0;
@@ -200,7 +200,7 @@ void AnimationHash::connectNodes(HashNode *targetNode, HashNode *nextNode, std::
 
     if (targetNode->next != nullptr) {
         targetNode->showArrow = 1;
-        this->makeArrow(&targetNode->shape, &targetNode->next->shape, &targetNode->arrow);
+        this->makeArrowHash(&targetNode->shape, &targetNode->next->shape, &targetNode->arrow);
     }
     else {
         targetNode->showArrow = 0;
@@ -296,7 +296,7 @@ void AnimationHash::moveNode(HashNode *targetNode, float x1, float y1)
     targetNode->shape.setPosition(x, y);
 }
 
-void AnimationHash::makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
+void AnimationHash::makeArrowHash(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
 {
     /* Replace targetArrow such that it point from node1 -> node 2 */
 
@@ -430,7 +430,7 @@ void AnimationHash::Relayout(bool emptyList, HashNode *head, float start_x, floa
     /* Show Arrow */
     for (HashNode *cur = head; cur->next != nullptr; cur = cur->next)
     {
-        this->makeArrow(&cur->shape, &cur->next->shape, &cur->arrow);
+        this->makeArrowHash(&cur->shape, &cur->next->shape, &cur->arrow);
     }
 }
 
@@ -467,7 +467,7 @@ void AnimationHash::updateNodePosition(HashNode *head, HashNode *tail, float sta
         cur->showArrow = 1;
         if (cur != tail)
         {
-            this->makeArrow(&cur->shape, &cur->next->shape, &cur->arrow);
+            this->makeArrowHash(&cur->shape, &cur->next->shape, &cur->arrow);
         }
     }
 

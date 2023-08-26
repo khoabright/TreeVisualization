@@ -131,7 +131,7 @@ void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next
 
         if (targetNode->next[next_index] != nullptr) {
             targetNode->showArrow[next_index] = 1;
-            makeArrow(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
+            makeArrowAVL(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
         }
         else {
             targetNode->showArrow[next_index] = 0;
@@ -150,7 +150,7 @@ void AnimationAVL::connectNodes(AVLNode *targetNode, AVLNode *nextNode, int next
 
     if (targetNode->next[next_index] != nullptr) {
         targetNode->showArrow[next_index] = 1;
-        makeArrow(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
+        makeArrowAVL(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
     }
     else {
         targetNode->showArrow[next_index] = 0;
@@ -276,7 +276,7 @@ void AnimationAVL::Relayout(bool emptyList, AVLNode *root, float start_x, float 
             curNode->showArrow[i] = 0;
             if (curNode->next[i])
             {
-                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
+                makeArrowAVL(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
                 curNode->showArrow[i] = 1;
             }
         }
@@ -306,7 +306,7 @@ void AnimationAVL::updateNodePosition(AVLNode *root, float start_x, float start_
         // cur->shape.setPosition(cur->x, cur->y);
             
 
-    /* Show Arrow by makeArrow*/
+    /* Show Arrow by makeArrowAVL*/
 
     /* cur->reset() */
 }

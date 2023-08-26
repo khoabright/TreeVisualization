@@ -22,7 +22,7 @@ GraphNode::GraphNode(float x, float y, float scale_x, float scale_y, int _key, s
 
     //Variables
     
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildGraph; ++i) {
         newNext(nullptr, i);
         nextNext(i);
     }
@@ -58,7 +58,7 @@ GraphNode::GraphNode(float x, float y, float scale_x, float scale_y, int _key, s
     //Arrow
     arrow_img.loadFromFile("Resources/Images/edgeGreen.png");
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildGraph; ++i) {
         arrow[i].setTexture(&arrow_img);
         arrow[i].setSize(sf::Vector2f(100.f, 40.f));
     }
@@ -82,20 +82,21 @@ GraphNode::GraphNode(float x, float y, float scale_x, float scale_y, int _key, s
 
 void GraphNode::reset()
 {   
+    showLabel = 0;
     this->x_center = this->x + this->radius;
     this->y_center = this->y + this->radius;
 
     array_fillColor.clear();
     array_outlineColor.clear();
     array_label.clear();
-    for (int i = 0; i < numChild; ++i) array_next[i].clear(); 
+    for (int i = 0; i < numChildGraph; ++i) array_next[i].clear(); 
     array_key.clear();
     array_pos.clear();
 
     idx_fillColor = -1;
     idx_outlineColor = -1;
     idx_label = -1;
-    for (int i = 0; i < numChild; ++i) idx_next[i] = -1;
+    for (int i = 0; i < numChildGraph; ++i) idx_next[i] = -1;
     idx_key = -1;
     idx_pos = -1;
 
@@ -107,7 +108,7 @@ void GraphNode::reset()
     newLabel(this->labelString);
     nextLabel();
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildGraph; ++i) {
         newNext(this->next[i], i);
         nextNext(i);
     }
@@ -321,7 +322,7 @@ void GraphNode::render(sf::RenderTarget *target)
         target->draw(this->labelText);
 }
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
+void makeArrowGraph(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
 {
     /* Replace targetArrow such that it point from node1 -> node 2 */
 
@@ -475,11 +476,11 @@ void ResetTree(GraphNode *root)
     // root->labelString = "";
     root->showNode = 1;
 
-    for (int i = 0; i < numChild; ++i) {
+    for (int i = 0; i < numChildGraph; ++i) {
         root->showArrow[i] = 0;
         if (root->next[i])
         {
-            makeArrow(&root->shape, &root->next[i]->shape, &root->arrow[i]);
+            makeArrowGraph(&root->shape, &root->next[i]->shape, &root->arrow[i]);
             root->showArrow[i] = 1;
         }
     }

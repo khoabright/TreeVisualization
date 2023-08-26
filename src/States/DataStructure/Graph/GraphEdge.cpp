@@ -14,8 +14,8 @@ GraphEdge::GraphEdge(GraphNode* node1, GraphNode* node2, float _cost, sf::Font *
     edgeFirst.setSize(sf::Vector2f(100.f, 40.f));
     edgeSecond.setSize(sf::Vector2f(100.f, 40.f));
     
-    makeArrow(&node1->shape, &node2->shape, &edgeFirst);
-    makeArrow(&node1->shape, &node2->shape, &edgeSecond);
+    makeArrowGraph(&node1->shape, &node2->shape, &edgeFirst);
+    makeArrowGraph(&node1->shape, &node2->shape, &edgeSecond);
 
     auto setTextPosition = [&]() {
         int x1 = node1->x_center;

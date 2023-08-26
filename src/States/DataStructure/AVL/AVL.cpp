@@ -528,7 +528,7 @@ AVLNode *AVL::rightRotate(AVLNode *y)
                                                 [this, x]()
                                                 { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {5}); },
                                                 [this, y]()
-                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {5}); }});
+                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {3}); }});
     waitAnimation();
 
     // this->animationAVL->instructions.push_back({[this, y, T2]()
@@ -560,7 +560,7 @@ AVLNode *AVL::leftRotate(AVLNode *x)
                                                 [this, x]()
                                                 { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {5}); },
                                                 [this, y]()
-                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {5}); }});
+                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {6}); }});
     waitAnimation();
 
     // this->animationAVL->instructions.push_back({[this, x, T2]()
@@ -601,11 +601,11 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     /* Make connection and highlight current node */
     std::string passColor = (curNode == root) ? "reachColor" : "normal"; // highlight real root node
     this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
-                                                { this->animationAVL->connectNodes(curNode, temp, direction, {5}); },
+                                                { this->animationAVL->connectNodes(curNode, temp, direction, {1}); },
                                                 [this, curNode]()
                                                 { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); },
                                                 [this, temp, passColor]()
-                                                { this->animationAVL->highlightCurrentNode(temp, passColor, {5}); }});
+                                                { this->animationAVL->highlightCurrentNode(temp, passColor, {3}); }});
     waitAnimation();
     // this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
     //                                             { this->animationAVL->connectNodes(curNode, temp, direction, {5}); },
@@ -627,11 +627,11 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
                                       heightAVL(curNode->next[1]));
     this->animationAVL->instructions.push_back({[this, curNode]()
-                                                { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); },
+                                                { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {4}); },
                                                 [this, curNode]()
                                                 { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); },
                                                 [this]()
-                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
+                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {4}); }});
     waitAnimation();
     // this->animationAVL->instructions.push_back({[this, curNode]()
     //                                             { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); }});

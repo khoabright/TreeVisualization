@@ -38,7 +38,7 @@ public:
     void highlightPassedNode(HashNode *targetNode, std::string passedLabel, std::string currentLabel, std::string passedColor, std::string currentColor, std::vector<int> codeLines);
 
     void moveNode(HashNode *targetNode, float x1, float y1);
-    void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+    void makeArrowHash(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 
     void Relayout(bool emptyList, HashNode *head, float start_x, float start_y, float distance_x, float distance_y, std::vector<int> codeLines);
 

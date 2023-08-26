@@ -8,16 +8,16 @@
 #include <bits/stdc++.h>
 #include <functional>
 
-const int numChild = 2;
+const int numChildGraph = 2;
 
 struct GraphNode
 {   
-    GraphNode *next[numChild];
+    GraphNode *next[numChildGraph];
     float array_start_x = 15, array_start_y = 75;
     float arrayDistanceX = 39.f, arrayDistanceY = 100.f; // array positions is set permanently 
 
     int key, heightGraph, depthGraph = 0; // depth compared to root
-    int amountLR[numChild] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
+    int amountLR[numChildGraph] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
     int subTreeSize = 0; // number of Node in its subtree (including itself)
     int balanceFactor = 0;
     int idxArray = -1; // index in array
@@ -35,20 +35,20 @@ struct GraphNode
     std::vector<std::string> array_outlineColor;
     std::vector<std::string> array_fillColor;
     std::vector<std::string> array_label;
-    std::vector<GraphNode*> array_next[numChild];
+    std::vector<GraphNode*> array_next[numChildGraph];
     std::vector<int> array_key;
     std::vector<sf::Vector2f> array_pos;
 
     int idx_outlineColor = -1;
     int idx_fillColor = -1;
     int idx_label = -1;
-    int idx_next[numChild] = {-1, -1};
+    int idx_next[numChildGraph] = {-1, -1};
     int idx_key = -1;
     int idx_pos = -1;
 
     sf::CircleShape shape;
     sf::RectangleShape shapeArray; // shape for square in array
-    sf::RectangleShape arrow[numChild];
+    sf::RectangleShape arrow[numChildGraph];
     sf::Texture arrow_img;
 
     sf::Text text, textArray, labelArray;
@@ -60,7 +60,7 @@ struct GraphNode
     sf::Color labelColor; // Yellow orange
 
     bool showNode = 1;
-    bool showArrow[numChild] = {};
+    bool showArrow[numChildGraph] = {};
     bool showLabel = 0;
     bool showTextArray = 0; 
 
@@ -106,7 +106,7 @@ struct GraphNode
     void render(sf::RenderTarget *target);
 };
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+void makeArrowGraph(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 void RecalTreeAmountLeftRight(GraphNode *root, int direction = 1, bool isRoot = 1); // direction = -1/1 is calculating amountLeft/Right
 void RecalTreePosition(GraphNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction = 1); 
 void ResetTree(GraphNode *root);

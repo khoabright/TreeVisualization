@@ -99,7 +99,7 @@ struct AVLNode
     void render(sf::RenderTarget *target);
 };
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+void makeArrowAVL(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 void RecalTreeAmountLeftRight(AVLNode *root, int direction = 1, bool isRoot = 1); // direction = -1/1 is calculating amountLeft/Right
 void RecalTreePosition(AVLNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction = 1); 
 void ResetTree(AVLNode *root);

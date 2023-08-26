@@ -150,7 +150,7 @@ void AnimationGraph::connectNodes(GraphNode *targetNode, GraphNode *nextNode, Gr
     }
     if (this->startStep[stepChildIndex]) this->startStep[stepChildIndex] = 0;
 
-    makeArrow(&targetNode->shape, &nextNode->shape, &edge->edgeSecond);
+    makeArrowGraph(&targetNode->shape, &nextNode->shape, &edge->edgeSecond);
     float scale = 1.f / this->animationTime * this->dt;
     edge->edgeSecond.setScale(sf::Vector2f(scale, 1));
 }

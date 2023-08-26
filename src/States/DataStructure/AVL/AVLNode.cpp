@@ -315,7 +315,7 @@ void AVLNode::render(sf::RenderTarget *target)
         target->draw(this->labelText);
 }
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
+void makeArrowAVL(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow)
 {
     /* Replace targetArrow such that it point from node1 -> node 2 */
 
@@ -473,7 +473,7 @@ void ResetTree(AVLNode *root)
         root->showArrow[i] = 0;
         if (root->next[i])
         {
-            makeArrow(&root->shape, &root->next[i]->shape, &root->arrow[i]);
+            makeArrowAVL(&root->shape, &root->next[i]->shape, &root->arrow[i]);
             root->showArrow[i] = 1;
         }
     }

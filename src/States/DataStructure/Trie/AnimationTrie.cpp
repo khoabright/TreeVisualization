@@ -65,14 +65,14 @@ void AnimationTrie::hideNode(TrieNode *targetNode, int &numberNode, std::vector<
     /* For deleted Node only */
     if (this->reverse && this->doneStep) {
         ++numberNode;
-        for (int i = 0; i < numChild; ++i)
+        for (int i = 0; i < numChildTrie; ++i)
             if (targetNode->next[i] != nullptr)
                 targetNode->showArrow[i] = 1;
         codeHighlight->prev_currentLines();
     }
     if (!this->reverse && this->startStep[stepChildIndex]) {
         --numberNode;
-        for (int i = 0; i < numChild; ++i)
+        for (int i = 0; i < numChildTrie; ++i)
             targetNode->showArrow[i] = 0;
         codeHighlight->next_currentLines(codeLines);
     }
@@ -131,7 +131,7 @@ void AnimationTrie::connectNodes(TrieNode *targetNode, TrieNode *nextNode, int n
 
         if (targetNode->next[next_index] != nullptr) {
             targetNode->showArrow[next_index] = 1;
-            makeArrow(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
+            makeArrowTrie(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
         }
         else {
             targetNode->showArrow[next_index] = 0;
@@ -150,7 +150,7 @@ void AnimationTrie::connectNodes(TrieNode *targetNode, TrieNode *nextNode, int n
 
     if (targetNode->next[next_index] != nullptr) {
         targetNode->showArrow[next_index] = 1;
-        makeArrow(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
+        makeArrowTrie(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
     }
     else {
         targetNode->showArrow[next_index] = 0;
@@ -248,7 +248,7 @@ void AnimationTrie::Relayout(bool emptyList, TrieNode *root, float start_x, floa
 
         moveNode(curNode, start_x + distance_x * curNode->amountLR[0], start_y + distance_y * curNode->depthTrie);
 
-        for (int i = 0; i < numChild; ++i) {
+        for (int i = 0; i < numChildTrie; ++i) {
             Queue.push(curNode->next[i]);
         }
         
@@ -264,12 +264,12 @@ void AnimationTrie::Relayout(bool emptyList, TrieNode *root, float start_x, floa
 
         if (curNode == nullptr) continue;
 
-        for (int i = 0; i < numChild; ++i) {
+        for (int i = 0; i < numChildTrie; ++i) {
             q.push(curNode->next[i]);
             curNode->showArrow[i] = 0;
             if (curNode->next[i])
             {
-                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
+                makeArrowTrie(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
                 curNode->showArrow[i] = 1;
             }
         }

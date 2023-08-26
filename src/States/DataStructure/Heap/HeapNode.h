@@ -8,16 +8,16 @@
 #include <bits/stdc++.h>
 #include <functional>
 
-const int numChild = 2;
+const int numChildHeap = 2;
 
 struct HeapNode
 {   
-    HeapNode *next[numChild];
+    HeapNode *next[numChildHeap];
     float array_start_x = 15, array_start_y = 75;
     float arrayDistanceX = 39.f, arrayDistanceY = 100.f; // array positions is set permanently 
 
     int key, heightHeap, depthHeap = 0; // depth compared to root
-    int amountLR[numChild] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
+    int amountLR[numChildHeap] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
     int subTreeSize = 0; // number of Node in its subtree (including itself)
     int balanceFactor = 0;
     int idxArray = -1; // index in array
@@ -35,20 +35,20 @@ struct HeapNode
     std::vector<std::string> array_outlineColor;
     std::vector<std::string> array_fillColor;
     std::vector<std::string> array_label;
-    std::vector<HeapNode*> array_next[numChild];
+    std::vector<HeapNode*> array_next[numChildHeap];
     std::vector<int> array_key;
     std::vector<sf::Vector2f> array_pos;
 
     int idx_outlineColor = -1;
     int idx_fillColor = -1;
     int idx_label = -1;
-    int idx_next[numChild] = {-1, -1};
+    int idx_next[numChildHeap] = {-1, -1};
     int idx_key = -1;
     int idx_pos = -1;
 
     sf::CircleShape shape;
     sf::RectangleShape shapeArray; // shape for square in array
-    sf::RectangleShape arrow[numChild];
+    sf::RectangleShape arrow[numChildHeap];
     sf::Texture arrow_img;
 
     sf::Text text, textArray, labelArray;
@@ -60,7 +60,7 @@ struct HeapNode
     sf::Color labelColor; // Yellow orange
 
     bool showNode = 0;
-    bool showArrow[numChild] = {};
+    bool showArrow[numChildHeap] = {};
     bool showLabel = 0;
     bool showTextArray = 0; 
 
@@ -106,7 +106,7 @@ struct HeapNode
     void render(sf::RenderTarget *target);
 };
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+void makeArrowHeap(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 void RecalTreeAmountLeftRight(HeapNode *root, int direction = 1, bool isRoot = 1); // direction = -1/1 is calculating amountLeft/Right
 void RecalTreePosition(HeapNode *root, float start_x, float start_y, float distance_x, float distance_y, int direction = 1); 
 void ResetTree(HeapNode *root);

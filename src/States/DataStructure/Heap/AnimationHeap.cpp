@@ -150,7 +150,7 @@ void AnimationHeap::connectNodes(HeapNode *targetNode, HeapNode *nextNode, int n
     }
     if (this->startStep[stepChildIndex]) this->startStep[stepChildIndex] = 0;
 
-    makeArrow(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
+    makeArrowHeap(&targetNode->shape, &targetNode->next[next_index]->shape, &targetNode->arrow[next_index]);
     float scale = 1.f / this->animationTime * this->dt;
     targetNode->arrow[next_index].setScale(sf::Vector2f(scale, 1));
 }
@@ -260,11 +260,11 @@ void AnimationHeap::Relayout(bool emptyList, HeapNode *root, float start_x, floa
 
         if (curNode == nullptr) continue;
 
-        for (int i = 0; i < numChild; ++i) {
+        for (int i = 0; i < numChildHeap; ++i) {
             curNode->showArrow[i] = 0;
             if (curNode->next[i])
             {
-                makeArrow(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
+                makeArrowHeap(&curNode->shape, &curNode->next[i]->shape, &curNode->arrow[i]);
                 curNode->showArrow[i] = 1;
             }
         }

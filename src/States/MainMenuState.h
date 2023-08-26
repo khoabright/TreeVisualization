@@ -3,11 +3,13 @@
 
 #pragma once
 #include "State.h"
-// #include "AVL.h"
-// #include "Heap.h"
-// #include "Hash.h"
-// #include "Trie.h"
+#include "AVL.h"
+#include "Heap.h"
+#include "HeapMax.h"
+#include "Hash.h"
+#include "Trie.h"
 #include "Graph.h"
+#include "Tree234.h"
 #include "Button.h"
 
 class MainMenuState : public State

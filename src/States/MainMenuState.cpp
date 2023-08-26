@@ -67,24 +67,32 @@ void MainMenuState::initButtons()
         0
     );
 
-    this->buttons["234 Tree"] = new Button(
+    this->buttons["Heap Min"] = new Button(
         start_x + 0 * distance_x, start_y + 2 * distance_y, scale_x, scale_y,
+        &this->font, "Min Heap", characterSize,
+        sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
+        sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
+        0
+    );
+
+    this->buttons["Heap Max"] = new Button(
+        start_x + 0 * distance_x, start_y + 3 * distance_y, scale_x, scale_y,
+        &this->font, "Max Heap", characterSize,
+        sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
+        sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
+        0
+    );
+
+    this->buttons["234 Tree"] = new Button(
+        start_x + 1 * distance_x, start_y + 0 * distance_y, scale_x, scale_y,
         &this->font, "234 Tree", characterSize,
         sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
         sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
         0
     );
 
-    this->buttons["Heap"] = new Button(
-        start_x + 0 * distance_x, start_y + 3 * distance_y, scale_x, scale_y,
-        &this->font, "Heap", characterSize,
-        sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
-        sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
-        0
-    );
-
     this->buttons["Trie"] = new Button(
-        start_x + 1 * distance_x, start_y + 0 * distance_y, scale_x, scale_y,
+        start_x + 1 * distance_x, start_y + 1 * distance_y, scale_x, scale_y,
         &this->font, "Trie", characterSize,
         sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
         sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
@@ -92,7 +100,7 @@ void MainMenuState::initButtons()
     );
 
     this->buttons["Graph"] = new Button(
-        start_x + 1 * distance_x, start_y + 1 * distance_y, scale_x, scale_y,
+        start_x + 1 * distance_x, start_y + 2 * distance_y, scale_x, scale_y,
         &this->font, "Graph", characterSize,
         sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
         sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0), 
@@ -100,7 +108,7 @@ void MainMenuState::initButtons()
     );
 
     this->buttons["Quit"] = new Button(
-        start_x + 1 * distance_x, start_y + 2 * distance_y, scale_x, scale_y,
+        start_x + 1 * distance_x, start_y + 3 * distance_y, scale_x, scale_y,
         &this->font, "Quit", characterSize,
         sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(20, 20, 20, 50),
         sf::Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0),
@@ -154,34 +162,46 @@ void MainMenuState::updateCursor()
 
 void MainMenuState::updateButtons()
 {
-    // //AVL Tree
-    // if (this->buttons["AVL Tree"]->isPressed())
-    // {
-    //     this->states->push(new AVL(this->window, this->supportedKeys, this->states));
-    // }
+    //AVL Tree
+    if (this->buttons["AVL Tree"]->isPressed())
+    {
+        this->states->push(new AVL(this->window, this->supportedKeys, this->states));
+    }
 
-    // // Heap
-    // if (this->buttons["Heap"]->isPressed())
-    // {
-    //     this->states->push(new Heap(this->window, this->supportedKeys, this->states));
-    // }
+    // Heap
+    if (this->buttons["Heap Min"]->isPressed())
+    {
+        this->states->push(new Heap(this->window, this->supportedKeys, this->states));
+    }
 
-    // // Hash
-    // if (this->buttons["Hash Table"]->isPressed())
-    // {
-    //     this->states->push(new Hash(this->window, this->supportedKeys, this->states));
-    // }
+    // Heap Max
+    if (this->buttons["Heap Max"]->isPressed())
+    {
+        this->states->push(new HeapMax(this->window, this->supportedKeys, this->states));
+    }
+
+    // Hash
+    if (this->buttons["Hash Table"]->isPressed())
+    {
+        this->states->push(new Hash(this->window, this->supportedKeys, this->states));
+    }
 
     // Trie
-    // if (this->buttons["Trie"]->isPressed())
-    // {
-    //     this->states->push(new Trie(this->window, this->supportedKeys, this->states));
-    // }
+    if (this->buttons["Trie"]->isPressed())
+    {
+        this->states->push(new Trie(this->window, this->supportedKeys, this->states));
+    }
 
     //Graph
     if (this->buttons["Graph"]->isPressed())
     {
         this->states->push(new Graph(this->window, this->supportedKeys, this->states));
+    }
+
+    //234 Tree
+    if (this->buttons["234 Tree"]->isPressed())
+    {
+        this->states->push(new Tree234(this->window, this->supportedKeys, this->states));
     }
 
     // Quit the game

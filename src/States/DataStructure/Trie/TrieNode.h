@@ -8,14 +8,14 @@
 #include <bits/stdc++.h>
 #include <functional>
 
-const int numChild = 26;
+const int numChildTrie = 26;
 
 struct TrieNode
 {   
-    TrieNode *next[numChild] = {};
+    TrieNode *next[numChildTrie] = {};
 
     int key, heightTrie, depthTrie = 0; // depth compared to root
-    int amountLR[numChild] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
+    int amountLR[numChildTrie] = {}; // amount of nodes visualized to the left/right (not include other side of root and root)
     int subTreeSize = 0; // number of Node in its subtree (including itself)
     int balanceFactor = 0;
     bool isEnd = 0;
@@ -31,19 +31,19 @@ struct TrieNode
     std::vector<std::string> array_outlineColor;
     std::vector<std::string> array_fillColor;
     std::vector<std::string> array_label;
-    std::vector<TrieNode*> array_next[numChild];
+    std::vector<TrieNode*> array_next[numChildTrie];
     std::vector<int> array_key;
     std::vector<sf::Vector2f> array_pos;
 
     int idx_outlineColor = -1;
     int idx_fillColor = -1;
     int idx_label = -1;
-    int idx_next[numChild];
+    int idx_next[numChildTrie];
     int idx_key = -1;
     int idx_pos = -1;
 
     sf::CircleShape shape;
-    sf::RectangleShape arrow[numChild];
+    sf::RectangleShape arrow[numChildTrie];
     sf::Texture arrow_img;
 
     sf::Text text;
@@ -55,7 +55,7 @@ struct TrieNode
     sf::Color labelColor; // Yellow orange
 
     bool showNode = 0;
-    bool showArrow[numChild] = {};
+    bool showArrow[numChildTrie] = {};
     bool showLabel = 1;
 
     TrieNode();
@@ -104,7 +104,7 @@ struct TrieNode
     void render(sf::RenderTarget *target);
 };
 
-void makeArrow(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
+void makeArrowTrie(sf::CircleShape *node1, sf::CircleShape *node2, sf::RectangleShape *targetArrow);
 void RecalTreeAmountLeftRight(TrieNode *root, bool isRoot = 1); // direction = -1/1 is calculating amountLeft/Right
 void RecalTreePosition(TrieNode *root, float start_x, float start_y, float distance_x, float distance_y); 
 void ResetTree(TrieNode *root);
