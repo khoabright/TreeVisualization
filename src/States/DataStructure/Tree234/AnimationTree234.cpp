@@ -255,7 +255,7 @@ void AnimationTree234::Relayout(bool emptyList, Tree234Node *root, float start_x
             if (root->next[i] == nullptr) continue;
             root->next[i]->depthTree234 = root->depthTree234 + 1;
             start_x = recalTreePosition(root->next[i], start_x, start_y, distance_x, distance_y, 0);
-            root->layout_width += root->next[i]->width + distance_x;
+            root->layout_width += root->next[i]->layout_width + distance_x;
         }
         root->layout_width -= distance_x; //redundant last space
 
@@ -314,7 +314,7 @@ void AnimationTree234::updateNodePosition(Tree234Node *root, int numberNode, flo
 void AnimationTree234::newInstruction(Tree234Node *root, int numberNode, float start_x, float start_y, float distance_x, float distance_y)
 {   
     /* Already completed all animations */
-    // this->updateNodePosition(root, numberNode, start_x, start_y, distance_x, distance_y);
+    this->updateNodePosition(root, numberNode, start_x, start_y, distance_x, distance_y);
 
     this->resetStartStep();
     this->curIndex = 0;

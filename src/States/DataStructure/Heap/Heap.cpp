@@ -810,7 +810,7 @@ void Heap::updateSFMLEvents(const float &dt, sf::Event &event)
 
 void Heap::update(const float &dt)
 {
-    this->window->setTitle("Heap");
+    this->window->setTitle("Min Heap");
     this->updateMousePositions();
     this->updateInput(dt);
     this->updateTexts();

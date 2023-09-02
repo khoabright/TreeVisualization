@@ -424,7 +424,7 @@ void RecalTreePosition(Tree234Node *root, float &start_x, float start_y, float d
         if (root->next[i] == nullptr) continue;
         root->next[i]->depthTree234 = root->depthTree234 + 1;
         RecalTreePosition(root->next[i], start_x, start_y, distance_x, distance_y, 0);
-        root->layout_width += root->next[i]->width + distance_x;
+        root->layout_width += root->next[i]->layout_width + distance_x;
     }
     root->layout_width -= distance_x; //redundant last space
     root->newPos(sf::Vector2f(root->layout_width / 2 - root->shape.getGlobalBounds().width / 2, start_y + distance_y * root->depthTree234));

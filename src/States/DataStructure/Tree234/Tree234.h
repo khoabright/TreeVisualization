@@ -55,8 +55,7 @@ private:
     void button_initialize();
     void button_add();
     void button_delete();
-    void button_top();
-    void button_size();
+    void button_search();
     void button_quit();
 
     
@@ -74,8 +73,7 @@ private:
 
     void operation_add(int nodeValue);
     void operation_delete();
-    void operation_top();
-    void operation_size();
+    void operation_search();
 
     void prepareNewInstruction();
 

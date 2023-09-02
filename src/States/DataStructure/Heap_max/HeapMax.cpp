@@ -810,7 +810,7 @@ void HeapMax::updateSFMLEvents(const float &dt, sf::Event &event)
 
 void HeapMax::update(const float &dt)
 {
-    this->window->setTitle("HeapMax");
+    this->window->setTitle("Max Heap");
     this->updateMousePositions();
     this->updateInput(dt);
     this->updateTexts();

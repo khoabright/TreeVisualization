@@ -67,8 +67,7 @@ void Tree234::initTriggerFunction()
         this->triggerFunction["Initialize"] = std::bind(&Tree234::button_initialize, this);
         this->triggerFunction["Add"] = std::bind(&Tree234::button_add, this);
         this->triggerFunction["Delete"] = std::bind(&Tree234::button_delete, this);
-        this->triggerFunction["Update"] = std::bind(&Tree234::button_top, this);
-        this->triggerFunction["Search"] = std::bind(&Tree234::button_size, this);
+        this->triggerFunction["Search"] = std::bind(&Tree234::button_search, this);
         this->triggerFunction["Quit"] = std::bind(&Tree234::button_quit, this);
         this->triggerFunction["SpeedMinus"] = std::bind(&Tree234::button_SpeedMinus, this);
         this->triggerFunction["SpeedPlus"] = std::bind(&Tree234::button_SpeedPlus, this);
@@ -279,9 +278,9 @@ void Tree234::button_initialize()
         {
             int newValue = values[i];
             float tmp_start_x = start_x;
-            this->animationTree234->newInstruction(this->root, numberNode, tmp_start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
             addHighlightCodes();
             insertTree234Node(newValue, root, root);
+            this->animationTree234->newInstruction(this->root, numberNode, tmp_start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
         }
         // this->animationTree234->updateNodePosition(this->root, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
         return;
@@ -309,9 +308,9 @@ void Tree234::button_initialize()
         while (inp >> newValue)
         {   
             float tmp_start_x = start_x;
-            this->animationTree234->newInstruction(this->root, numberNode, tmp_start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
             addHighlightCodes();
             insertTree234Node(newValue, root, root);
+            this->animationTree234->newInstruction(this->root, numberNode, tmp_start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
         }
         inp.close();
 
@@ -341,15 +340,9 @@ void Tree234::button_delete()
     return;
 }
 
-void Tree234::button_top()
+void Tree234::button_search()
 {
-    operation_top();
-    return;
-}
-
-void Tree234::button_size()
-{
-    operation_size();
+    operation_search();
     return;
 }
 
@@ -412,14 +405,28 @@ void Tree234::insertTree234Node(int key, Tree234Node *curNode, Tree234Node *pare
                                                             [this, cur = curNode]()
                                                             {
                                                                 this->animationTree234->highlightCurrentNode(cur, "normalFillColor", "normalOutlineColor", {1});
-                                                            }});
+                                                            },
+                                                            [this]()
+                                                            { this->animationTree234->Relayout(0, root, start_x, start_y, nodeDistanceX, nodeDistanceY, {2}); }});
 
+            waitAnimation();
+
+            this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                            {
+                                                                this->animationTree234->highlightCurrentNode(cur, "normal", "normal", {1});
+                                                            }});
             waitAnimation();
             return;
         }
+
+        // go to corresponding child
         int sz = curNode->key.size();
         for (int i = 0; i < sz; ++i) {
             if (key < curNode->key[i]) {
+                this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                                {
+                                                                    this->animationTree234->highlightCurrentNode(cur, "normal", "normal", {1});
+                                                                }});
                 insertTree234Node(key, curNode->next[i], curNode);
                 return;
             }
@@ -752,11 +759,7 @@ void Tree234::operation_delete()
     return;
 }
 
-void Tree234::operation_top()
-{
-}
-
-void Tree234::operation_size()
+void Tree234::operation_search()
 {
 }
 
@@ -1086,9 +1089,7 @@ void Tree234::reset()
     
     this->DeleteNodePointers();
 
-    // buildTree234Tree(root);
-    // RecalTreeAmountLeftRight(root);
-    // RecalTreePosition(root, start_x, start_y, nodeDistanceX, nodeDistanceY);
+    root = nullptr;
 
     this->numberNode = 0;
 
@@ -1149,25 +1150,22 @@ void Tree234::endOperation()
 
 void Tree234::ReInitButtons()
 {
-    // delete (this->buttons["Update"]);
-    // delete (this->buttons["Search"]);
-    // this->buttons.erase(buttons.find("Update"));
-    // this->buttons.erase(buttons.find("Search"));
+    delete (this->buttons["Update"]);
+    delete (this->buttons["Search"]);
+    delete (this->buttons["Quit"]);
+    this->buttons.erase(buttons.find("Update"));
 
-    // this->buttons["Top"] = new Button(
-    //     insButtonX, insButtonY + 4 * insButtonDistanceY, scale_x, scale_y,
-    //     &this->font, "Top", characterSize,
-    //     sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
-    //     sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
-    //     1, insButtonSizeX, insButtonSizeY);
+    this->buttons["Search"] = new Button(
+        insButtonX, insButtonY + 4 * insButtonDistanceY, scale_x, scale_y,
+        &this->font, "Search", characterSize,
+        sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
+        sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
+        1, insButtonSizeX, insButtonSizeY);
 
-
-    // this->buttons["Size"] = new Button(
-    //     insButtonX, insButtonY + 5 * insButtonDistanceY, scale_x, scale_y,
-    //     &this->font, "Size", characterSize,
-    //     sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
-    //     sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
-    //     1, insButtonSizeX, insButtonSizeY);
-
-    // return;
+    this->buttons["Quit"] = new Button(
+        insButtonX, insButtonY + 5 * insButtonDistanceY, scale_x, scale_y,
+        &this->font, "Quit", characterSize,
+        sf::Color(255, 255, 255, 255), sf::Color(240, 180, 10, 255), sf::Color(240, 180, 10, 255),
+        sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(150, 150, 150, 255),
+        1, insButtonSizeX, insButtonSizeY);
 }
