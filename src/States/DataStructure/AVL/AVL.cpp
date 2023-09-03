@@ -497,15 +497,15 @@ AVLNode *AVL::newAVLNode(int key, AVLNode *parentNode)
     newNode->heightAVL = 1;
     this->Nodes.push_back(newNode);
     this->animationAVL->instructions.push_back({[this, newNode]()
-                                                { this->animationAVL->showNode(newNode, "1", this->numberNode, {1}); },
+                                                { this->animationAVL->showNode(newNode, "1", this->numberNode, {0}); },
                                                 [this, parentNode]()
-                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {5}); }});
+                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {0}); }});
     waitAnimation();
 
     return (newNode);
 }
 
-AVLNode *AVL::rightRotate(AVLNode *y)
+AVLNode *AVL::rightRotate(AVLNode *y, int codeLine)
 {
     AVLNode *x = y->next[0];
     AVLNode *T2 = x->next[1];
@@ -521,14 +521,14 @@ AVLNode *AVL::rightRotate(AVLNode *y)
                             heightAVL(x->next[1])) +
                    1;
 
-    this->animationAVL->instructions.push_back({[this, x, y]()
-                                                { this->animationAVL->connectNodes(x, y, 1, {1}); },
-                                                [this, y, T2]()
-                                                { this->animationAVL->connectNodes(y, T2, 0, {1}); },
-                                                [this, x]()
-                                                { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {5}); },
-                                                [this, y]()
-                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {3}); }});
+    this->animationAVL->instructions.push_back({[this, x, y, codeLine]()
+                                                { this->animationAVL->connectNodes(x, y, 1, {codeLine}); },
+                                                [this, y, T2, codeLine]()
+                                                { this->animationAVL->connectNodes(y, T2, 0, {codeLine}); },
+                                                [this, x, codeLine]()
+                                                { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {codeLine}); },
+                                                [this, y, codeLine]()
+                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {codeLine}); }});
     waitAnimation();
 
     // this->animationAVL->instructions.push_back({[this, y, T2]()
@@ -538,7 +538,7 @@ AVLNode *AVL::rightRotate(AVLNode *y)
     return x;
 }
 
-AVLNode *AVL::leftRotate(AVLNode *x)
+AVLNode *AVL::leftRotate(AVLNode *x, int codeLine)
 {
     AVLNode *y = x->next[1];
     AVLNode *T2 = y->next[0];
@@ -553,14 +553,14 @@ AVLNode *AVL::leftRotate(AVLNode *x)
                             heightAVL(y->next[1])) +
                    1;
 
-    this->animationAVL->instructions.push_back({[this, y, x]()
-                                                { this->animationAVL->connectNodes(y, x, 0, {1}); },
-                                                [this, x, T2]()
-                                                { this->animationAVL->connectNodes(x, T2, 1, {1}); },
-                                                [this, x]()
-                                                { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {5}); },
-                                                [this, y]()
-                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {6}); }});
+    this->animationAVL->instructions.push_back({[this, y, x, codeLine]()
+                                                { this->animationAVL->connectNodes(y, x, 0, {codeLine}); },
+                                                [this, x, T2, codeLine]()
+                                                { this->animationAVL->connectNodes(x, T2, 1, {codeLine}); },
+                                                [this, x, codeLine]()
+                                                { this->animationAVL->changeNodeLabel(x, std::to_string(x->heightAVL), {codeLine}); },
+                                                [this, y, codeLine]()
+                                                { this->animationAVL->changeNodeLabel(y, std::to_string(y->heightAVL), {codeLine}); }});
     waitAnimation();
 
     // this->animationAVL->instructions.push_back({[this, x, T2]()
@@ -588,9 +588,9 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
 
     /* Highlight path */
     this->animationAVL->instructions.push_back({[this, curNode]()
-                                                { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); },
+                                                { this->animationAVL->highlightCurrentNode(curNode, "newColor", {}); },
                                                 [this, parentNode]()
-                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {5}); }});
+                                                { this->animationAVL->highlightCurrentNode(parentNode, "normal", {}); }});
     waitAnimation();
 
     /* Move down to its subtree and connect */
@@ -601,23 +601,12 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     /* Make connection and highlight current node */
     std::string passColor = (curNode == root) ? "reachColor" : "normal"; // highlight real root node
     this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
-                                                { this->animationAVL->connectNodes(curNode, temp, direction, {1}); },
+                                                { this->animationAVL->connectNodes(curNode, temp, direction, {direction ? 4 : 2}); },
                                                 [this, curNode]()
-                                                { this->animationAVL->highlightCurrentNode(curNode, "newColor", {5}); },
+                                                { this->animationAVL->highlightCurrentNode(curNode, "newColor", {}); },
                                                 [this, temp, passColor]()
-                                                { this->animationAVL->highlightCurrentNode(temp, passColor, {3}); }});
+                                                { this->animationAVL->highlightCurrentNode(temp, passColor, {}); }});
     waitAnimation();
-    // this->animationAVL->instructions.push_back({[this, curNode, temp, direction]()
-    //                                             { this->animationAVL->connectNodes(curNode, temp, direction, {5}); },
-    //                                             [this]()
-    //                                             { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
-
-    // this->animationAVL->instructions.push_back({[this]()
-    //                                             { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {5}); }});
-    // waitAnimation();
-
-    // Update the balance factor of each curNode and
-    // balance the tree
 
     /* Call animation for update balance factor, then call balancing animation */
     /* If no need balancing => relayout, else simultaneously rotate (only make arrow) and relayout */
@@ -627,14 +616,12 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     curNode->heightAVL = 1 + std::max(heightAVL(curNode->next[0]),
                                       heightAVL(curNode->next[1]));
     this->animationAVL->instructions.push_back({[this, curNode]()
-                                                { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {4}); },
+                                                { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {6}); },
                                                 [this, curNode]()
-                                                { this->animationAVL->highlightCurrentNode(curNode, "normal", {5}); },
+                                                { this->animationAVL->highlightCurrentNode(curNode, "normal", {6}); },
                                                 [this]()
-                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {4}); }});
+                                                { this->animationAVL->Relayout((numberNode == 0), root->next[0], start_x, start_y, nodeDistanceX, nodeDistanceY, {6}); }});
     waitAnimation();
-    // this->animationAVL->instructions.push_back({[this, curNode]()
-    //                                             { this->animationAVL->changeNodeLabel(curNode, std::to_string(curNode->heightAVL), {5}); }});
 
     if (curNode == root)
         return nullptr;
@@ -644,24 +631,24 @@ AVLNode *AVL::insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key)
     {
         if (key < curNode->next[0]->key)
         {
-            return rightRotate(curNode);
+            return rightRotate(curNode, 9);
         }
         else if (key > curNode->next[0]->key)
         {
-            curNode->next[0] = leftRotate(curNode->next[0]);
-            return rightRotate(curNode);
+            curNode->next[0] = leftRotate(curNode->next[0], 11);
+            return rightRotate(curNode, 12);
         }
     }
     if (balanceFactor < -1)
     {
         if (key > curNode->next[1]->key)
         {
-            return leftRotate(curNode);
+            return leftRotate(curNode, 15);
         }
         else if (key < curNode->next[1]->key)
         {
-            curNode->next[1] = rightRotate(curNode->next[1]);
-            return leftRotate(curNode);
+            curNode->next[1] = rightRotate(curNode->next[1], 17);
+            return leftRotate(curNode, 18);
         }
     }
     return curNode;
@@ -863,14 +850,28 @@ void AVL::operation_add(int nodeValue)
     auto addHighlightCodes = [&]
     {
         codeHighlight->introText.setString("Insert " + std::to_string(nodeValue));
-        codeHighlight->codeStrings.push_back("Node cur = head");                      // 0
-        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)");      // 1
-        codeHighlight->codeStrings.push_back("   cur = cur.next");                    // 2
-        codeHighlight->codeStrings.push_back("Node nxt = cur.next");                  // 3
-        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");           // 4
-        codeHighlight->codeStrings.push_back("newNode.next = nxt");                   // 5
-        codeHighlight->codeStrings.push_back("cur.next = newNode");                   // 6
-        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
+        codeHighlight->codeStrings.push_back("if (node == NULL) return (newNode(key))");   // 0
+        codeHighlight->codeStrings.push_back("if (key < node->key)");                      // 1
+        codeHighlight->codeStrings.push_back("   node->left = insert(node->left, key)");   // 2
+        codeHighlight->codeStrings.push_back("else if (key > node->key)");                 // 3
+        codeHighlight->codeStrings.push_back("   node->right = insert(node->right, key)"); // 4
+        codeHighlight->codeStrings.push_back("else return node");                          // 5
+        codeHighlight->codeStrings.push_back("update node->height");                       // 6
+        codeHighlight->codeStrings.push_back("if (balanceFactor > 1)");                    // 7
+        codeHighlight->codeStrings.push_back(" if (key < node->left->key)");               // 8
+        codeHighlight->codeStrings.push_back("   return rightRotate(node)");               // 9
+        codeHighlight->codeStrings.push_back(" else if (key > node->left->key)");          // 10
+        codeHighlight->codeStrings.push_back("   node->left = leftRotate(node->left)");    // 11
+        codeHighlight->codeStrings.push_back("   return rightRotate(node)");               // 12
+
+        codeHighlight->codeStrings.push_back("if (balanceFactor < -1)");                   // 13
+        codeHighlight->codeStrings.push_back(" if (key > node->right->key)");              // 14
+        codeHighlight->codeStrings.push_back("   return leftRotate(node)");                // 15
+        codeHighlight->codeStrings.push_back(" else if (key < node->right->key)");         // 16
+        codeHighlight->codeStrings.push_back("   node->right = rightRotate(node->right)"); // 17
+        codeHighlight->codeStrings.push_back("   return leftRotate(node)");                // 18
+
+        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 19
         this->codeHighlight->updateTexts();
     };
     addHighlightCodes();

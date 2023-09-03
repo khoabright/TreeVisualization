@@ -17,14 +17,23 @@ private:
     sf::RectangleShape background;
     sf::RectangleShape introBackground;
 
+    // float background_x = 860;
+    // float background_y = 395;
+    // float background_width = 370;
+    // float background_height = 380;
+
+    // float lineDistance = 30;
+    // float text_start_x = 870;
+    // float text_start_y = 440;
+    // int characterSize = 17;
     float background_x = 860;
-    float background_y = 395;
-    float background_width = 370;
-    float background_height = 380;
+    float background_y = 95;
+    float background_width = 378;
+    float background_height = 680;
 
     float lineDistance = 30;
     float text_start_x = 870;
-    float text_start_y = 440;
+    float text_start_y = 140;
     int characterSize = 17;
 
     sf::Color characterIntroColor = sf::Color(240, 180, 10, 255); // yellow orange

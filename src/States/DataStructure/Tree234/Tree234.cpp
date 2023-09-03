@@ -179,8 +179,23 @@ void Tree234::initInputFields()
                                                            sf::Color::White, sf::Color::White, sf::Color::Black);
     };
 
+    auto init_delete = [&]() {
+        ++idy;
+    };
+
+    auto init_search = [&]() {
+        ++idy;
+        this->inputFields["Search"]["1Search"] = new InputField(this->inputFieldOriginX,
+                                                           this->inputFieldOriginY + (idy - 1) * (this->inputFieldHeight + this->inputFieldDistanceY),
+                                                           this->inputFieldWidth, this->inputFieldHeight, this->scale_x, this->scale_y,
+                                                           &this->font, this->inputFieldCharacterSize,
+                                                           sf::Color::White, sf::Color::White, sf::Color::Black);
+    };
+
     init_initialize();
     init_add();
+    init_delete();
+    init_search();
 }
 
 void Tree234::initAnimation()
@@ -342,8 +357,17 @@ void Tree234::button_delete()
 
 void Tree234::button_search()
 {
-    operation_search();
-    return;
+    this->choosingChildButton = "1Search";
+
+    if (this->newStepTriggered)
+    {
+        this->operation_search(this->valueFirst);
+        return;
+    }
+    else
+    {
+        this->inputGuide.setString("Input a value");
+    }
 }
 
 void Tree234::button_quit()
@@ -759,8 +783,111 @@ void Tree234::operation_delete()
     return;
 }
 
-void Tree234::operation_search()
+void Tree234::operation_search(int nodeValue)
 {
+    this->prepareNewInstruction();
+    this->button_play();
+
+    auto preCheck = [&]()
+    {
+        if (nodeValue == -1)
+        {
+            this->inputWarning.setString("Wrong input format");
+            return false;
+        }
+        if (nodeValue < 1 || nodeValue > 200)
+        {
+            this->inputWarning.setString("Value should be in range [1..200]");
+            return false;
+        }
+
+        if (numberNode + 1 > maxNode)
+        {
+            this->inputWarning.setString("Sorry, the maximum size is " + std::to_string(maxNode));
+            return false;
+        }
+
+        // if (this->exist[nodeValue])
+        // {
+        //     this->inputWarning.setString("No duplicate vertex allowed!");
+        //     return false;
+        // }
+        return true;
+    };
+    if (!preCheck())
+    {
+        return;
+    }
+    
+    this->exist[nodeValue] = 1;
+
+    auto addHighlightCodes = [&]
+    {
+        codeHighlight->introText.setString("Search " + std::to_string(nodeValue));
+        codeHighlight->codeStrings.push_back("Node cur = head");                      // 0
+        codeHighlight->codeStrings.push_back("for (i = 0; i < index - 1; ++i)");      // 1
+        codeHighlight->codeStrings.push_back("   cur = cur.next");                    // 2
+        codeHighlight->codeStrings.push_back("Node nxt = cur.next");                  // 3
+        codeHighlight->codeStrings.push_back("Node newNode = new Node(v)");           // 4
+        codeHighlight->codeStrings.push_back("newNode.next = nxt");                   // 5
+        codeHighlight->codeStrings.push_back("cur.next = newNode");                   // 6
+        codeHighlight->codeStrings.push_back("// Relayout, not in actual operation"); // 7
+        this->codeHighlight->updateTexts();
+    };
+    addHighlightCodes();
+
+    Tree234Node* curNode = root;
+
+    while (1) {
+        int sz = curNode->key.size();
+        this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                        {
+                                                            this->animationTree234->highlightCurrentNode(cur, "normalFillColor", "reachColor", {1});
+                                                        }});
+        // Check keys of curNode
+        for (int i = 0; i < sz; ++i) {
+            if (nodeValue == curNode->key[i]) {
+                this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                    {
+                                                        this->animationTree234->highlightCurrentNode(cur, "normalFillColor", "newColor", {1});
+                                                    }});
+                endOperation();
+                return;
+            }
+        }
+        if (curNode->next[0] == nullptr) {
+            // no child => NOT FOUND
+            this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                        {
+                                                            this->animationTree234->highlightCurrentNode(cur, "normal", "normal", {1});
+                                                        }});
+            endOperation();
+            return;
+        }
+
+        // Go to corresponding child
+        int choose_idx = -1;
+        for (int i = 0; i < sz; ++i) {
+            assert(curNode->next[i] != nullptr);
+            if (nodeValue < curNode->key[i]) {
+                choose_idx = i;
+                break;
+            }
+        }
+        
+        if (choose_idx == -1) {
+            assert(curNode->next[sz] != nullptr);
+            choose_idx = sz;
+        }
+        this->animationTree234->instructions.push_back({[this, cur = curNode]()
+                                                        {
+                                                            this->animationTree234->highlightCurrentNode(cur, "normal", "normal", {1});
+                                                        }});
+        curNode = curNode->next[choose_idx];
+    }
+    
+    endOperation();
+    return;
 }
 
 void Tree234::prepareNewInstruction()

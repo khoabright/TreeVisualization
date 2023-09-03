@@ -73,7 +73,7 @@ private:
 
     void operation_add(int nodeValue);
     void operation_delete();
-    void operation_search();
+    void operation_search(int nodeValue);
 
     void prepareNewInstruction();
 

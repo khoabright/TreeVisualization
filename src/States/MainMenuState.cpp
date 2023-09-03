@@ -163,10 +163,10 @@ void MainMenuState::updateCursor()
 void MainMenuState::updateButtons()
 {
     //AVL Tree
-    // if (this->buttons["AVL Tree"]->isPressed())
-    // {
-    //     this->states->push(new AVL(this->window, this->supportedKeys, this->states));
-    // }
+    if (this->buttons["AVL Tree"]->isPressed())
+    {
+        this->states->push(new AVL(this->window, this->supportedKeys, this->states));
+    }
 
     // // Heap
     // if (this->buttons["Heap Min"]->isPressed())
@@ -199,10 +199,10 @@ void MainMenuState::updateButtons()
     // }
 
     //234 Tree
-    if (this->buttons["234 Tree"]->isPressed())
-    {
-        this->states->push(new Tree234(this->window, this->supportedKeys, this->states));
-    }
+    // if (this->buttons["234 Tree"]->isPressed())
+    // {
+    //     this->states->push(new Tree234(this->window, this->supportedKeys, this->states));
+    // }
 
     // Quit the game
     if (this->buttons["Quit"]->isPressed())

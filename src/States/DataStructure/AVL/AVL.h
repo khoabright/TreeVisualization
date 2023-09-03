@@ -62,8 +62,8 @@ private:
     // AVL operations
     int heightAVL(AVLNode *N);
     AVLNode *newAVLNode(int key, AVLNode *parentNode);
-    AVLNode *rightRotate(AVLNode *y);
-    AVLNode *leftRotate(AVLNode *x);
+    AVLNode *rightRotate(AVLNode *y, int codeLine = 0);
+    AVLNode *leftRotate(AVLNode *x, int codeLine = 0);
     int getBalanceFactor(AVLNode *N);
     AVLNode *insertAVLNode(AVLNode *curNode, AVLNode *parentNode, int key);
     AVLNode *AVLNodeWithMaxValue(AVLNode *curNode);

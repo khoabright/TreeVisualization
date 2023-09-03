@@ -271,44 +271,48 @@ void Graph::button_initialize()
 
     if (this->choosingChildButton == "2Random")
     {
-        // if (this->newStepTriggered)
-        // {
-        //     this->newStepTriggered = 0;
-        //     this->inputGuide.setString("");
-        //     if (this->valueFirst > maxNode)
-        //     {
-        //         this->inputWarning.setString("Sorry, maximum size is " + std::to_string(maxNode));
-        //         return;
-        //     }
-        // }
-        // else
-        // {
-        //     this->inputGuide.setString("Input a size");
-        //     return;
-        // }
+        if (this->newStepTriggered)
+        {
+            this->newStepTriggered = 0;
+            this->inputGuide.setString("");
+            if (this->valueFirst > maxNode)
+            {
+                this->inputWarning.setString("Sorry, maximum size is " + std::to_string(maxNode));
+                return;
+            }
+        }
+        else
+        {
+            this->inputGuide.setString("Input a size");
+            return;
+        }
 
-        // this->reset();
-        // prepareNewInstruction();
+        this->reset();
+        prepareNewInstruction();
 
-        // auto addHighlightCodes = [&]
-        // {
-        //     codeHighlight->introText.setString("Random GraphTree with " + std::to_string(valueFirst) + " node" + (valueFirst > 1 ? "s" : ""));
-        //     codeHighlight->codeStrings.resize(100); // fake highlight
-        //     this->codeHighlight->updateTexts();
-        // };
-        // std::vector<int> values(200);
-        // for (int i = 0; i < 200; ++i)
-        //     values[i] = i + 1;
-        // std::shuffle(values.begin(), values.end(), this->randomize);
-        // for (int i = 0; i < this->valueFirst; ++i)
-        // {
-        //     int newValue = values[i];
-        //     // this->animationGraph->newInstruction(this->root, arrNode, numberNode, this->start_x, this->start_y, this->nodeDistanceX, this->nodeDistanceY);
-        //     addHighlightCodes();
-        //     insertGraphNode(newValue);
-        // }
+        auto addHighlightCodes = [&]
+        {
+            codeHighlight->introText.setString("Random GraphTree with " + std::to_string(valueFirst) + " node" + (valueFirst > 1 ? "s" : ""));
+            codeHighlight->codeStrings.resize(100); // fake highlight
+            this->codeHighlight->updateTexts();
+        };
+        addHighlightCodes();
+        std::vector<int> values(200);
+        for (int i = 0; i < 200; ++i)
+            values[i] = i + 1;
+        std::shuffle(values.begin(), values.end(), this->randomize);
+        
+        numberNode = valueFirst;
+        adj_matrix.resize(numberNode + 2, std::vector<int> (numberNode + 2));
 
-        // return;
+        int idx = 0;
+        for (int x = 1; x <= numberNode; ++x)
+        for (int y = x + 1; y <= numberNode; ++y)
+        {
+            adj_matrix[x][y] = adj_matrix[y][x] = values[idx++];
+        }
+        buildGraph();
+        return;
     }
 
     if (this->choosingChildButton == "3Load File")
@@ -326,6 +330,7 @@ void Graph::button_initialize()
             codeHighlight->codeStrings.resize(100); // fake highlight
             this->codeHighlight->updateTexts();
         };
+        addHighlightCodes();
 
         std::ifstream inp;
         inp.open("InputFiles/inputGraph.txt");
