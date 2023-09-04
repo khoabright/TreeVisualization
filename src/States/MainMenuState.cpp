@@ -168,41 +168,41 @@ void MainMenuState::updateButtons()
         this->states->push(new AVL(this->window, this->supportedKeys, this->states));
     }
 
-    // // Heap
-    // if (this->buttons["Heap Min"]->isPressed())
-    // {
-    //     this->states->push(new Heap(this->window, this->supportedKeys, this->states));
-    // }
+    // Heap
+    if (this->buttons["Heap Min"]->isPressed())
+    {
+        this->states->push(new Heap(this->window, this->supportedKeys, this->states));
+    }
 
-    // // Heap Max
-    // if (this->buttons["Heap Max"]->isPressed())
-    // {
-    //     this->states->push(new HeapMax(this->window, this->supportedKeys, this->states));
-    // }
+    // Heap Max
+    if (this->buttons["Heap Max"]->isPressed())
+    {
+        this->states->push(new HeapMax(this->window, this->supportedKeys, this->states));
+    }
 
-    // // Hash
-    // if (this->buttons["Hash Table"]->isPressed())
-    // {
-    //     this->states->push(new Hash(this->window, this->supportedKeys, this->states));
-    // }
+    // Hash
+    if (this->buttons["Hash Table"]->isPressed())
+    {
+        this->states->push(new Hash(this->window, this->supportedKeys, this->states));
+    }
 
-    // // Trie
-    // if (this->buttons["Trie"]->isPressed())
-    // {
-    //     this->states->push(new Trie(this->window, this->supportedKeys, this->states));
-    // }
+    // Trie
+    if (this->buttons["Trie"]->isPressed())
+    {
+        this->states->push(new Trie(this->window, this->supportedKeys, this->states));
+    }
 
-    // //Graph
-    // if (this->buttons["Graph"]->isPressed())
-    // {
-    //     this->states->push(new Graph(this->window, this->supportedKeys, this->states));
-    // }
+    //Graph
+    if (this->buttons["Graph"]->isPressed())
+    {
+        this->states->push(new Graph(this->window, this->supportedKeys, this->states));
+    }
 
-    //234 Tree
-    // if (this->buttons["234 Tree"]->isPressed())
-    // {
-    //     this->states->push(new Tree234(this->window, this->supportedKeys, this->states));
-    // }
+    // 234 Tree
+    if (this->buttons["234 Tree"]->isPressed())
+    {
+        this->states->push(new Tree234(this->window, this->supportedKeys, this->states));
+    }
 
     // Quit the game
     if (this->buttons["Quit"]->isPressed())
